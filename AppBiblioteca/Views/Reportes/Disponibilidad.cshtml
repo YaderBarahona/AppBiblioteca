@@ -1,0 +1,291 @@
+﻿@model AppBiblioteca.Models.ReporteDisponibilidadViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Disponibilidad de Materiales";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        Reporte de Disponibilidad de Materiales
+                    </h2>
+                    <p class="text-muted">Estado de disponibilidad de ejemplares por categoría</p>
+                </div>
+                <a asp-action="Dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Categorias.Any())
+    {
+        <!-- Resumen Global -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">@Model.Categorias.Sum(c => c.TotalMateriales)</h3>
+                        <p class="mb-0">Total Materiales</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">@Model.Categorias.Sum(c => c.TotalEjemplares)</h3>
+                        <p class="mb-0">Total Ejemplares</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">@Model.Categorias.Sum(c => c.EjemplaresDisponibles)</h3>
+                        <p class="mb-0">Ejemplares Disponibles</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">@Model.Categorias.Sum(c => c.EjemplaresPrestados)</h3>
+                        <p class="mb-0">Ejemplares Prestados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Disponibilidad por Categoría -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                        Disponibilidad por Categoría
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-light" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Categoría</th>
+                                <th class="text-center">Materiales</th>
+                                <th class="text-center">Total Ejemplares</th>
+                                <th class="text-center">Disponibles</th>
+                                <th class="text-center">Prestados</th>
+                                <th class="text-center">% Disponibilidad</th>
+                                <th style="width: 200px;">Indicador Visual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var categoria in Model.Categorias.OrderByDescending(c => c.TotalEjemplares))
+                            {
+                                var porcentaje = categoria.PorcentajeDisponibilidad;
+                                var progressClass = porcentaje >= 70 ? "bg-success" : porcentaje >= 40 ? "bg-warning" : "bg-danger";
+                                var statusIcon = porcentaje >= 70 ? "bi-check-circle-fill text-success" : porcentaje >= 40 ? "bi-exclamation-circle-fill text-warning" : "bi-x-circle-fill text-danger";
+
+                                <tr>
+                                    <td>
+                                        <strong>@categoria.Categoria</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">@categoria.TotalMateriales</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info text-dark">@categoria.TotalEjemplares</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success">@categoria.EjemplaresDisponibles</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-warning text-dark">@categoria.EjemplaresPrestados</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong class="fs-5">@porcentaje.ToString("F1")%</strong>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi @statusIcon me-2"></i>
+                                            <div class="progress flex-grow-1" style="height: 20px;">
+                                                <div class="progress-bar @progressClass"
+                                                     role="progressbar"
+                                                     style="width: @porcentaje%"
+                                                     aria-valuenow="@porcentaje"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td>TOTAL</td>
+                                <td class="text-center">@Model.Categorias.Sum(c => c.TotalMateriales)</td>
+                                <td class="text-center">@Model.Categorias.Sum(c => c.TotalEjemplares)</td>
+                                <td class="text-center">@Model.Categorias.Sum(c => c.EjemplaresDisponibles)</td>
+                                <td class="text-center">@Model.Categorias.Sum(c => c.EjemplaresPrestados)</td>
+                                <td class="text-center">
+                                    @{
+                                        var totalEjemplares = Model.Categorias.Sum(c => c.TotalEjemplares);
+                                        var totalDisponibles = Model.Categorias.Sum(c => c.EjemplaresDisponibles);
+                                        var porcentajeTotal = totalEjemplares > 0 ? Math.Round((totalDisponibles * 100.0m / totalEjemplares), 1) : 0;
+                                    }
+                                    @porcentajeTotal.ToString("F1")%
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análisis y Alertas -->
+        <div class="row g-3 mt-4">
+            <!-- Categorías con Baja Disponibilidad -->
+            @{
+                var categoriasBajaDisponibilidad = Model.Categorias.Where(c => c.PorcentajeDisponibilidad < 40).ToList();
+            }
+            @if (categoriasBajaDisponibilidad.Any())
+            {
+                <div class="col-md-6">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                Alertas - Baja Disponibilidad
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Categorías con menos del 40% de disponibilidad:</p>
+                            <ul>
+                                @foreach (var cat in categoriasBajaDisponibilidad.OrderBy(c => c.PorcentajeDisponibilidad))
+                                {
+                                    <li class="mb-2">
+                                        <strong>@cat.Categoria:</strong>
+                                        @cat.PorcentajeDisponibilidad.ToString("F1")% disponible
+                                        (@cat.EjemplaresDisponibles de @cat.TotalEjemplares ejemplares)
+                                        <br />
+                                        <small class="text-danger">
+                                            <i class="bi bi-lightbulb"></i>
+                                            Considerar adquisición de más ejemplares
+                                        </small>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Categorías con Alta Disponibilidad -->
+            @{
+                var categoriasAltaDisponibilidad = Model.Categorias.Where(c => c.PorcentajeDisponibilidad >= 70).ToList();
+            }
+            @if (categoriasAltaDisponibilidad.Any())
+            {
+                <div class="col-md-6">
+                    <div class="card border-success shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Estado Óptimo
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Categorías con buena disponibilidad (≥ 70%):</p>
+                            <ul>
+                                @foreach (var cat in categoriasAltaDisponibilidad.OrderByDescending(c => c.PorcentajeDisponibilidad))
+                                {
+                                    <li class="mb-2">
+                                        <strong>@cat.Categoria:</strong>
+                                        @cat.PorcentajeDisponibilidad.ToString("F1")% disponible
+                                        (@cat.EjemplaresDisponibles de @cat.TotalEjemplares ejemplares)
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    Interpretación y Recomendaciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-success fs-3 me-2"></i>
+                            <div>
+                                <strong>Óptimo (≥ 70%)</strong>
+                                <p class="mb-0 small text-muted">Buena disponibilidad. Mantener monitoreo regular.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-exclamation-circle-fill text-warning fs-3 me-2"></i>
+                            <div>
+                                <strong>Moderado (40-69%)</strong>
+                                <p class="mb-0 small text-muted">Considerar adquisición de más ejemplares si la demanda es alta.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-x-circle-fill text-danger fs-3 me-2"></i>
+                            <div>
+                                <strong>Crítico (&lt; 40%)</strong>
+                                <p class="mb-0 small text-muted">Acción requerida: adquirir más ejemplares o revisar políticas de préstamo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-info-circle"></i>
+            No hay datos de disponibilidad disponibles en este momento.
+        </div>
+    }
+</div>
+
+<style media="print">
+    .btn, .card-header button, nav, header, footer {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+    }
+
+    .progress {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+</style>

@@ -1,0 +1,182 @@
+﻿@model IEnumerable<AppBiblioteca.Models.Prestamo>
+
+@{
+    ViewData["Title"] = "Mis Préstamos";
+    var esBibliotecario = ViewBag.EsBibliotecario ?? false;
+    var esEstudiante = ViewBag.EsEstudiante ?? false;
+}
+
+<div class="mb-5 pt-5">
+    <h2 class="text-center text-dark">@ViewData["Title"]</h2>
+</div>
+
+@if (esEstudiante)
+{
+    <a asp-action="CrearReserva" class="btn btn-success mb-3 rounded-pill">
+        <i class="bi bi-plus-circle"></i> Nueva Reserva
+    </a>
+}
+
+@if (esBibliotecario)
+{
+    <div class="mb-3">
+        <a asp-action="PendientesAprobacion" class="btn btn-warning rounded-pill">
+            <i class="bi bi-clock-history"></i> Pendientes de Aprobación
+        </a>
+        <a asp-action="Activos" class="btn btn-primary rounded-pill">
+            <i class="bi bi-book"></i> Préstamos Activos
+        </a>
+        <a asp-action="ConAtraso" class="btn btn-danger rounded-pill">
+            <i class="bi bi-exclamation-triangle"></i> Con Atraso
+        </a>
+    </div>
+}
+
+<div class="card-glow">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            No hay préstamos para mostrar.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        @if (esBibliotecario)
+                        {
+                            <th>Usuario</th>
+                        }
+                        <th>Materiales</th>
+                        <th>Estado</th>
+                        <th>F. Préstamo</th>
+                        <th>F. Devolución</th>
+                        <th>F. Devuelto</th>
+                        <th>Atraso</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prestamo in Model)
+                    {
+                        <tr>
+                            <td>@prestamo.TN_Id_Prestamo</td>
+                            @if (esBibliotecario)
+                            {
+                                <td>
+                                    <strong>@prestamo.NombreUsuario</strong><br />
+                                    <small>@prestamo.EmailUsuario</small>
+                                </td>
+                            }
+                            <td>
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var detalle in prestamo.Detalles)
+                                    {
+                                        <li>
+                                            <strong>@detalle.TituloMaterial</strong><br />
+                                            <small class="text-muted">
+                                                ISBN: @detalle.ISBN | @detalle.Autores
+                                            </small>
+                                        </li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>
+                                @if (prestamo.TN_Id_Estado == 1)
+                                {
+                                    <span class="badge bg-warning text-dark">@prestamo.EstadoNombre</span>
+                                }
+                                else if (prestamo.TN_Id_Estado == 2)
+                                {
+                                    <span class="badge bg-primary">@prestamo.EstadoNombre</span>
+                                }
+                                else if (prestamo.TN_Id_Estado == 3)
+                                {
+                                    <span class="badge bg-success">@prestamo.EstadoNombre</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@prestamo.EstadoNombre</span>
+                                }
+                            </td>
+                            <td>@(prestamo.TF_FechaPrestamo?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>@(prestamo.TF_FechaDevolucion?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>@(prestamo.TF_FechaDevuelto?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td>
+                                @if (prestamo.TN_DiasAtraso > 0)
+                                {
+                                    <span class="badge bg-danger">@prestamo.TN_DiasAtraso días</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-grid gap-1">
+                                    @if (prestamo.PuedeSerAprobado && esBibliotecario)
+                                    {
+                                        <form asp-action="Aprobar" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@prestamo.TN_Id_Prestamo" />
+                                            <button type="submit" class="btn btn-sm btn-success rounded-pill">
+                                                <i class="bi bi-check-circle"></i> Aprobar
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (prestamo.PuedeSerDevuelto && esBibliotecario)
+                                    {
+                                        <form asp-action="Devolver" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@prestamo.TN_Id_Prestamo" />
+                                            <button type="submit" class="btn btn-sm btn-warning rounded-pill">
+                                                <i class="bi bi-arrow-return-left"></i> Devolver
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (prestamo.PuedeSerCancelado)
+                                    {
+                                        <form asp-action="Cancelar" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@prestamo.TN_Id_Prestamo" />
+                                            <button type="submit" class="btn btn-sm btn-danger rounded-pill" onclick="return confirm('¿Está seguro de cancelar esta reserva?')">
+                                                <i class="bi bi-x-circle"></i> Cancelar
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          var ok = @Html.Raw(Json.Serialize(TempData["SuccessMessage"]?.ToString() ?? ""));
+          if (ok) {
+            Swal.fire({ icon:'success', text: ok });
+          }
+
+          var err = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]?.ToString() ?? ""));
+          if (err) {
+            Swal.fire({ icon:'error', title:'Error', text: err });
+          }
+
+          var info = @Html.Raw(Json.Serialize(TempData["InfoMessage"]?.ToString() ?? ""));
+          if (info) {
+            Swal.fire({ icon:'info', text: info });
+          }
+        });
+    </script>
+}

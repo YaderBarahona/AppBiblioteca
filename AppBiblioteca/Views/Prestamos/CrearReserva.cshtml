@@ -1,0 +1,150 @@
+﻿@model AppBiblioteca.Models.CrearReservaViewModel
+
+@{
+    ViewData["Title"] = "Nueva Reserva";
+}
+
+<form asp-action="CrearReserva" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-5 pt-5">
+        <h2 class="text-center text-dark">@ViewData["Title"]</h2>
+        <p class="text-center text-muted">Seleccione hasta 3 materiales para reservar</p>
+    </div>
+
+    <div class="mb-3 card-glow">
+        @if (!Model.MaterialesDisponibles.Any())
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+                No hay materiales disponibles en este momento. Intente más tarde.
+            </div>
+            <a asp-action="Index" class="btn btn-secondary rounded-pill">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        }
+        else
+        {
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="50">Seleccionar</th>
+                            <th>Título</th>
+                            <th>ISBN</th>
+                            <th>Autores</th>
+                            <th>Categoría</th>
+                            <th>Disponibles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var material in Model.MaterialesDisponibles)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           name="MaterialesSeleccionados"
+                                           value="@material.TN_Id_Material"
+                                           class="form-check-input material-checkbox"
+                                           id="material_@material.TN_Id_Material" />
+                                </td>
+                                <td>
+                                    <label for="material_@material.TN_Id_Material" class="form-check-label" style="cursor:pointer;">
+                                        <strong>@material.TC_Titulo</strong>
+                                    </label>
+                                </td>
+                                <td>@material.TC_ISBN</td>
+                                <td>
+                                    <small>@material.Autores</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@material.Categoria</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">@material.TN_Disponibles</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <strong>Nota:</strong> Puede seleccionar hasta 3 materiales por reserva. No puede tener más de 3 préstamos activos simultáneamente.
+            </div>
+
+            <div id="selectionWarning" class="alert alert-warning" style="display:none;">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>¡Atención!</strong> Ha seleccionado <span id="selectionCount">0</span> materiales. El máximo permitido es 3.
+            </div>
+
+            <button type="submit" class="btn btn-success rounded-pill" id="btnSubmit">
+                <i class="bi bi-check-circle"></i> Crear Reserva
+            </button>
+            <a asp-action="Index" class="btn btn-secondary rounded-pill ms-2">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
+        }
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          // Mensajes - escapar comillas simples para evitar errores de sintaxis
+          var err = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]?.ToString() ?? ""));
+          if (err) {
+            Swal.fire({ icon:'error', title:'¡Ups!', text: err });
+          }
+
+          var info = @Html.Raw(Json.Serialize(TempData["InfoMessage"]?.ToString() ?? ""));
+          if (info) {
+            Swal.fire({ icon:'info', text: info });
+          }
+
+          // Control de selección de materiales
+          const checkboxes = document.querySelectorAll('.material-checkbox');
+          const btnSubmit = document.getElementById('btnSubmit');
+          const selectionWarning = document.getElementById('selectionWarning');
+          const selectionCount = document.getElementById('selectionCount');
+          const MAX_SELECTION = 3;
+
+          // Solo ejecutar si hay materiales disponibles
+          if (checkboxes.length > 0 && btnSubmit && selectionWarning && selectionCount) {
+            function updateSelectionState() {
+              const checked = document.querySelectorAll('.material-checkbox:checked');
+              const count = checked.length;
+
+              selectionCount.textContent = count;
+
+              if (count > MAX_SELECTION) {
+                selectionWarning.style.display = 'block';
+                btnSubmit.disabled = true;
+                btnSubmit.classList.add('btn-secondary');
+                btnSubmit.classList.remove('btn-success');
+              } else if (count === 0) {
+                selectionWarning.style.display = 'none';
+                btnSubmit.disabled = true;
+                btnSubmit.classList.add('btn-secondary');
+                btnSubmit.classList.remove('btn-success');
+              } else {
+                selectionWarning.style.display = 'none';
+                btnSubmit.disabled = false;
+                btnSubmit.classList.add('btn-success');
+                btnSubmit.classList.remove('btn-secondary');
+              }
+            }
+
+            checkboxes.forEach(checkbox => {
+              checkbox.addEventListener('change', updateSelectionState);
+            });
+
+            // Estado inicial
+            updateSelectionState();
+          }
+        });
+    </script>
+}

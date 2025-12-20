@@ -1,0 +1,245 @@
+﻿@model AppBiblioteca.Models.ReporteAtrasosViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Préstamos Atrasados";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        Reporte de Préstamos Atrasados
+                    </h2>
+                    <p class="text-muted">Préstamos que han superado su fecha de devolución</p>
+                </div>
+                <a asp-action="Dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.PrestamosAtrasados.Any())
+    {
+        <!-- Estadísticas de Atrasos -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">@Model.TotalAtrasados</h3>
+                        <p class="mb-0">Préstamos Atrasados</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            @Model.PrestamosAtrasados.Sum(p => p.DiasAtraso)
+                        </h3>
+                        <p class="mb-0">Total Días de Atraso</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            @(Model.PrestamosAtrasados.Any() ? Model.PrestamosAtrasados.Average(p => p.DiasAtraso).ToString("F1") : "0")
+                        </h3>
+                        <p class="mb-0">Promedio Días Atraso</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            @Model.PrestamosAtrasados.Sum(p => p.CantidadMateriales)
+                        </h3>
+                        <p class="mb-0">Materiales Pendientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Préstamos Atrasados -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i>
+                        Detalle de Préstamos Atrasados
+                    </h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Imprimir
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Contacto</th>
+                                <th>F. Préstamo</th>
+                                <th>F. Devolución</th>
+                                <th class="text-center">Días Atraso</th>
+                                <th class="text-center">Materiales</th>
+                                <th class="text-center">Urgencia</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prestamo in Model.PrestamosAtrasados.OrderByDescending(p => p.DiasAtraso))
+                            {
+                                var urgencia = prestamo.DiasAtraso > 15 ? "Alta" : prestamo.DiasAtraso > 7 ? "Media" : "Baja";
+                                var badgeClass = prestamo.DiasAtraso > 15 ? "bg-danger" : prestamo.DiasAtraso > 7 ? "bg-warning text-dark" : "bg-info text-dark";
+
+                                <tr class="@(prestamo.DiasAtraso > 15 ? "table-danger" : prestamo.DiasAtraso > 7 ? "table-warning" : "")">
+                                    <td class="fw-bold">#@prestamo.TN_Id_Prestamo</td>
+                                    <td>
+                                        <strong>@prestamo.NombreUsuario</strong>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <i class="bi bi-envelope"></i>
+                                            <small>@prestamo.TC_Email</small>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(prestamo.TC_Telefono))
+                                        {
+                                            <div>
+                                                <i class="bi bi-telephone"></i>
+                                                <small>@prestamo.TC_Telefono</small>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (prestamo.TF_FechaPrestamo.HasValue)
+                                        {
+                                            @prestamo.TF_FechaPrestamo.Value.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (prestamo.TF_FechaDevolucion.HasValue)
+                                        {
+                                            <span class="text-danger fw-bold">
+                                                @prestamo.TF_FechaDevolucion.Value.ToString("dd/MM/yyyy")
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger fs-6">
+                                            @prestamo.DiasAtraso días
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">@prestamo.CantidadMateriales</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @badgeClass">@urgencia</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-controller="Prestamos" asp-action="Details" asp-route-id="@prestamo.TN_Id_Prestamo"
+                                               class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-warning"
+                                                    onclick="enviarRecordatorio('@prestamo.TC_Email', '@prestamo.NombreUsuario')"
+                                                    title="Enviar recordatorio">
+                                                <i class="bi bi-envelope"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    Recomendaciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li class="mb-2">
+                        <strong>Urgencia Alta (> 15 días):</strong> Contactar inmediatamente al usuario. Considerar suspensión temporal de préstamos.
+                    </li>
+                    <li class="mb-2">
+                        <strong>Urgencia Media (7-15 días):</strong> Enviar recordatorio por correo electrónico y/o llamada telefónica.
+                    </li>
+                    <li class="mb-2">
+<strong>Urgencia Baja (&lt; 7 días):</strong> Enviar recordatorio amigable por correo electrónico.
+                    </li>
+                    <li>
+                        <strong>Seguimiento:</strong> Revisar este reporte diariamente para identificar nuevos atrasos.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success border-0 shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-1 me-3"></i>
+                <div>
+                    <h4 class="alert-heading">¡Excelente!</h4>
+                    <p class="mb-0">No hay préstamos atrasados en este momento. Todos los usuarios están al día con sus devoluciones.</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style media="print">
+    .btn, .card-header .btn-group, nav, header, footer {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+    }
+</style>
+
+@section Scripts {
+<script>
+    function enviarRecordatorio(email, nombre) {
+        Swal.fire({
+            title: 'Enviar Recordatorio',
+            html: `¿Desea enviar un recordatorio a <strong>${nombre}</strong> (${email})?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, enviar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#0d6efd'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Funcionalidad en desarrollo',
+                    text: 'El envío automático de recordatorios estará disponible próximamente.',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+</script>
+}

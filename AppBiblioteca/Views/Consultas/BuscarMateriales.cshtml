@@ -1,0 +1,162 @@
+﻿@model AppBiblioteca.Models.BusquedaMaterialesViewModel
+@{
+    ViewData["Title"] = "Buscar Materiales";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">📚 Buscar Materiales</h2>
+                    <p class="text-muted">Búsqueda avanzada de libros y materiales bibliográficos</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros de Búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="BuscarMateriales" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Titulo" class="form-label">Título</label>
+                        <input asp-for="Titulo" class="form-control" placeholder="Buscar por título..." />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ISBN" class="form-label">ISBN</label>
+                        <input asp-for="ISBN" class="form-control" placeholder="Buscar por ISBN..." />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="IdCategoria" class="form-label">Categoría</label>
+                        <select asp-for="IdCategoria" asp-items="Model.Categorias" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="IdEditorial" class="form-label">Editorial</label>
+                        <select asp-for="IdEditorial" asp-items="Model.Editoriales" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="IdAutor" class="form-label">Autor</label>
+                        <select asp-for="IdAutor" asp-items="Model.Autores" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Estado" class="form-label">Estado</label>
+                        <select asp-for="Estado" asp-items="Model.Estados" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="AnioDesde" class="form-label">Año Desde</label>
+                        <input asp-for="AnioDesde" type="number" class="form-control" placeholder="Ej: 2000" min="1900" max="2100" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="AnioHasta" class="form-label">Año Hasta</label>
+                        <input asp-for="AnioHasta" type="number" class="form-control" placeholder="Ej: 2024" min="1900" max="2100" />
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a asp-action="BuscarMateriales" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    @if (Model.HasSearched)
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i> Resultados de Búsqueda
+                    @if (Model.HasResults)
+                    {
+                        <span class="badge bg-primary">@Model.Resultados.Count</span>
+                    }
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.HasResults)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Título</th>
+                                    <th>ISBN</th>
+                                    <th>Categoría</th>
+                                    <th>Autor(es)</th>
+                                    <th>Editorial</th>
+                                    <th>Año</th>
+                                    <th>Disponibles</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var material in Model.Resultados)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@material.Titulo</strong>
+                                        </td>
+                                        <td>@material.ISBN</td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">@material.CategoriaNombre</span>
+                                        </td>
+                                        <td>
+                                            <small>@(material.Autores ?? "N/A")</small>
+                                        </td>
+                                        <td>@material.EditorialNombre</td>
+                                        <td>@material.AnioPublicacion</td>
+                                        <td>
+                                            <span class="badge @(material.Disponibles > 0 ? "bg-success" : "bg-danger")">
+                                                @material.Disponibles / @material.Cantidad
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (material.Estado == "Disponible")
+                                            {
+                                                <span class="badge bg-success">@material.Estado</span>
+                                            }
+                                            else if (material.Estado == "Dado de Baja")
+                                            {
+                                                <span class="badge bg-danger">@material.Estado</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">@material.Estado</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Materiales" asp-action="Details" asp-route-id="@material.Id_Material"
+                                               class="btn btn-sm btn-outline-primary rounded-pill">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        No se encontraron materiales con los criterios especificados.
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

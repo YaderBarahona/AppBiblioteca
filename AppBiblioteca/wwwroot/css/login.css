@@ -1,0 +1,75 @@
+body {
+    background: linear-gradient(to bottom, #0B5345 0%, #033A30 50%, #000000 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 0 12px; /* nuevo: espacio lateral en móviles */
+    box-sizing: border-box;
+}
+
+.login-card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin: 40px auto; /* centra y da espacio vertical */
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+    .login-card h2 {
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+
+
+
+/* Responsive en pantallas pequeñas */
+@media (max-width: 576px) {
+
+    body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+
+    .login-card {
+        margin: 20px auto; /* centra y separa del borde superior */
+        padding: 16px; /* un poco más compacto */
+        width: 100%; /* asegúrate de que no sobresalga */
+        box-sizing: border-box; /* protege del overflow */
+
+    }
+
+        .login-card img {
+            max-width: 100%;
+            height: auto;
+        }
+}
+
+.input-group {
+    border: 1px solid #ced4da;
+    border-radius: 50rem;
+    background-color: white;
+    overflow: hidden; /* Esto es clave para evitar la separación */
+    transition: box-shadow 0.3s ease;
+}
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* resplandor azul */
+        border-color: #86b7fe;
+    }
+
+.input-group-text {
+    border: none !important;
+    background-color: transparent;
+}
+
+.form-control {
+    border: none !important;
+    box-shadow: none !important;
+}

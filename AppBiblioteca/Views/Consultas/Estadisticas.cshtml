@@ -1,0 +1,278 @@
+﻿@model AppBiblioteca.Models.EstadisticasViewModel
+@{
+    ViewData["Title"] = "Estadísticas";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">📊 Estadísticas del Sistema</h2>
+                    <p class="text-muted">Dashboard con métricas y análisis de la biblioteca</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas de Materiales -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="fw-bold mb-3"><i class="bi bi-book"></i> Estadísticas de Materiales</h4>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-primary text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total Materiales</h5>
+                    <h2 class="display-4 fw-bold">@Model.TotalMateriales</h2>
+                    <p class="mb-0">títulos diferentes en el catálogo</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-success text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Ejemplares Disponibles</h5>
+                    <h2 class="display-4 fw-bold">@Model.TotalDisponibles</h2>
+                    <p class="mb-0">de @Model.TotalEjemplares ejemplares totales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-warning text-dark h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Ejemplares Prestados</h5>
+                    <h2 class="display-4 fw-bold">@Model.TotalPrestados</h2>
+                    <p class="mb-0">actualmente en circulación</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas de Préstamos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="fw-bold mb-3"><i class="bi bi-arrow-left-right"></i> Estadísticas de Préstamos</h4>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-data" style="font-size: 2rem; color: #0d6efd;"></i>
+                    <h3 class="mt-2 fw-bold text-primary">@Model.TotalPrestamos</h3>
+                    <p class="text-muted mb-0">Total Préstamos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-hourglass-split" style="font-size: 2rem; color: #17a2b8;"></i>
+                    <h3 class="mt-2 fw-bold text-info">@Model.Reservados</h3>
+                    <p class="text-muted mb-0">Reservados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-book-half" style="font-size: 2rem; color: #007bff;"></i>
+                    <h3 class="mt-2 fw-bold text-primary">@Model.Prestados</h3>
+                    <p class="text-muted mb-0">Prestados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i>
+                    <h3 class="mt-2 fw-bold text-danger">@Model.ConAtraso</h3>
+                    <p class="text-muted mb-0">Con Atraso</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Materiales Más Prestados -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Top 10 Materiales Más Prestados</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.MaterialesMasPrestados.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Título</th>
+                                        <th>Categoría</th>
+                                        <th class="text-center">Veces Prestado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int contador = 1;
+                                    }
+                                    @foreach (var material in Model.MaterialesMasPrestados)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @if (contador <= 3)
+                                                {
+                                                    <span class="badge bg-warning text-dark">@contador</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@contador</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>@material.TC_Titulo</strong>
+                                                    <br>
+                                                    <small class="text-muted">ISBN: @material.TC_ISBN</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">@material.TC_Categoria</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary">@material.VecesPrestado</span>
+                                            </td>
+                                        </tr>
+                                        contador++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i> No hay datos de préstamos disponibles.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Usuarios Más Activos -->
+        <div class="col-lg-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Top 10 Usuarios Más Activos</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.UsuariosMasActivos.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Usuario</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-center">Activos</th>
+                                        <th class="text-center">Atrasados</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int contadorUsuarios = 1;
+                                    }
+                                    @foreach (var usuario in Model.UsuariosMasActivos)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @if (contadorUsuarios <= 3)
+                                                {
+                                                    <span class="badge bg-warning text-dark">@contadorUsuarios</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@contadorUsuarios</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>@usuario.TC_UserName</strong>
+                                                    <br>
+                                                    <small class="text-muted">@usuario.TC_Email</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary">@usuario.TotalPrestamos</span>
+                                            </td>
+                                            <td class="text-center">
+                                                @if (usuario.PrestamosActivos > 0)
+                                                {
+                                                    <span class="badge bg-info text-dark">@usuario.PrestamosActivos</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">0</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (usuario.PrestamosAtrasados > 0)
+                                                {
+                                                    <span class="badge bg-danger">@usuario.PrestamosAtrasados</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">0</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        contadorUsuarios++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i> No hay usuarios con préstamos.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen General -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Resumen General</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Estado de Materiales</h6>
+                            <ul>
+                                <li>Materiales Disponibles: <strong>@Model.MaterialesDisponibles</strong></li>
+                                <li>Materiales Dados de Baja: <strong>@Model.MaterialesDadosBaja</strong></li>
+                                <li>Tasa de Disponibilidad: <strong>@(Model.TotalEjemplares > 0 ? Math.Round((double)Model.TotalDisponibles / Model.TotalEjemplares * 100, 2) : 0)%</strong></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-success">Estado de Préstamos</h6>
+                            <ul>
+                                <li>Préstamos Completados: <strong>@Model.Devueltos</strong></li>
+                                <li>Préstamos Cancelados: <strong>@Model.Cancelados</strong></li>
+                                <li>Tasa de Cumplimiento: <strong>@(Model.Prestados > 0 ? Math.Round((double)(Model.Prestados - Model.ConAtraso) / Model.Prestados * 100, 2) : 100)%</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,225 @@
+﻿@model AppBiblioteca.Models.BusquedaRecursosViewModel
+
+@{
+    ViewData["Title"] = "Buscar Recursos";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">
+            <i class="bi bi-search text-primary"></i>
+            Búsqueda Avanzada de Recursos
+        </h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <!-- Alertas -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Formulario de Búsqueda -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel"></i> Filtros de Búsqueda
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Buscar" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="TextoBusqueda" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input asp-for="TextoBusqueda" class="form-control"
+                                   placeholder="Buscar en título y descripción...">
+                        </div>
+                        <small class="form-text text-muted">
+                            Ingrese palabras clave para buscar en títulos y descripciones
+                        </small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="NombreProfesor" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person-badge"></i>
+                            </span>
+                            <input asp-for="NombreProfesor" class="form-control"
+                                   placeholder="Nombre o apellido del profesor...">
+                        </div>
+                        <small class="form-text text-muted">
+                            Buscar recursos publicados por un profesor específico
+                        </small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FiltroAsignatura" class="form-label"></label>
+                        <select asp-for="FiltroAsignatura" class="form-select" asp-items="Model.AsignaturasList"></select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FiltroTipoContenido" class="form-label"></label>
+                        <select asp-for="FiltroTipoContenido" class="form-select" asp-items="Model.TiposContenidoList"></select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FechaDesde" class="form-label"></label>
+                        <input asp-for="FechaDesde" class="form-control" type="date">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FechaHasta" class="form-label"></label>
+                        <input asp-for="FechaHasta" class="form-control" type="date">
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a asp-action="Buscar" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    @if (Model.HasSearched)
+    {
+        @if (Model.HasResults)
+        {
+            <div class="mb-3">
+                <h4 class="text-primary">
+                    <i class="bi bi-list-check"></i>
+                    Resultados de Búsqueda (@Model.TotalResultados)
+                </h4>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var recurso in Model.Resultados)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm card-hover">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="@recurso.TC_Icono"></i>
+                                    @recurso.TC_Titulo
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-person-badge"></i> <strong>Profesor:</strong> @recurso.NombreProfesor
+                                    </small>
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-book"></i> <strong>Asignatura:</strong>
+                                        <span class="badge bg-info text-dark">@recurso.NombreAsignatura</span>
+                                    </small>
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-tag"></i> @recurso.TC_TipoContenido
+                                    </small>
+                                </p>
+                                @if (!string.IsNullOrEmpty(recurso.TC_Descripcion))
+                                {
+                                    <p class="card-text">
+                                        @if (recurso.TC_Descripcion.Length > 100)
+                                        {
+                                            @recurso.TC_Descripcion.Substring(0, 100)<text>...</text>
+                                        }
+                                        else
+                                        {
+                                            @recurso.TC_Descripcion
+                                        }
+                                    </p>
+                                }
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> @recurso.TF_FechaCreacion.ToString("dd/MM/yyyy")
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="card-footer bg-light">
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Ver" asp-route-id="@recurso.TN_Id_Contenido"
+                                       class="btn btn-sm btn-outline-primary flex-fill">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                    <a href="@recurso.TC_URL" target="_blank"
+                                       class="btn btn-sm btn-success flex-fill">
+                                        <i class="bi bi-box-arrow-up-right"></i> Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <strong>No se encontraron recursos</strong> que coincidan con los criterios de búsqueda.
+                Intenta con otros filtros o términos de búsqueda.
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-light border">
+            <i class="bi bi-lightbulb text-warning"></i>
+            <strong>Sugerencia:</strong> Utiliza los filtros anteriores para encontrar recursos específicos.
+            Puedes combinar múltiples criterios para refinar tu búsqueda.
+        </div>
+    }
+</div>
+
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .card-footer {
+        border-radius: 0 0 10px 10px !important;
+    }
+</style>

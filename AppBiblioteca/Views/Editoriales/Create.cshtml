@@ -1,0 +1,63 @@
+﻿@model AppBiblioteca.Models.Editorial
+
+@{
+    ViewData["Title"] = "Agregar Nuevo Editorial";
+
+}
+
+
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-5 pt-5">
+        <h2 class=" text-center text-dark">@ViewData["Title"]</h2>
+    </div>
+
+  <div class="mb-3 card-glow">
+
+    <div class="mb-3">
+        <label asp-for="EditorialNombre" class="form-label">Nombre</label>
+            <input asp-for="EditorialNombre" class="form-control rounded-pill" placeholder="Nombre del Editorial" />
+        <span asp-validation-for="EditorialNombre" class="text-danger"></span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Id_Pais" class="form-label">País</label>
+        <select asp-for="Id_Pais" class="form-select rounded-pill">
+            <option value="">-- Seleccione un país --</option>
+            @foreach (var p in (List<(int Id, string Nombre)>)ViewBag.Paises)
+            {
+                <option value="@p.Id">@p.Nombre</option>
+            }
+        </select>
+        <span asp-validation-for="Id_Pais" class="text-danger"></span>
+    </div>
+
+
+    <button type="submit" class="btn btn-dark rounded-pill">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary rounded-pill ms-2">Cancelar</a>
+  </div>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          // error...
+          var err = '@Html.Raw(TempData["ErrorMessage"])';
+          if (err) {
+            Swal.fire({ icon:'error', title:'¡Ups!', text: err });
+          }
+
+          // éxito...
+          var ok = '@Html.Raw(TempData["SuccessMessage"])';
+          if (ok) {
+            Swal.fire({ icon:'success', title:'¡Bien!', text: ok });
+          }
+        });
+    </script>
+}

@@ -1,0 +1,207 @@
+﻿@model AppBiblioteca.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalles del Usuario";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="bi bi-person-circle text-primary"></i>
+                    Detalles del Usuario
+                </h2>
+                <a asp-action="UsuariosTrue" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <!-- Card de Información Personal -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-badge"></i>
+                        @Model.UserName @Model.LastName
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Columna Izquierda -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="text-muted small">Nombre</label>
+                                <p class="fw-bold">@Model.UserName</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Apellidos</label>
+                                <p class="fw-bold">@Model.LastName</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Cédula</label>
+                                <p class="fw-bold">@Model.Cedula</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Correo Electrónico</label>
+                                <p class="fw-bold">
+                                    <i class="bi bi-envelope"></i>
+                                    <a href="mailto:@Model.Email">@Model.Email</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="text-muted small">Rol</label>
+                                <p class="fw-bold">
+                                    @if (Model.Role == "Administrador")
+                                    {
+                                        <span class="badge bg-danger">@Model.Role</span>
+                                    }
+                                    else if (Model.Role == "Bibliotecario")
+                                    {
+                                        <span class="badge bg-warning text-dark">@Model.Role</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@Model.Role</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Estado</label>
+                                <p class="fw-bold">
+                                    @if (Model.Activo)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Activo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Inactivo
+                                        </span>
+                                    }
+                                </p>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.Seccion))
+                            {
+                                <div class="mb-3">
+                                    <label class="text-muted small">Sección</label>
+                                    <p class="fw-bold">@Model.Seccion</p>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.Telefono))
+                            {
+                                <div class="mb-3">
+                                    <label class="text-muted small">Teléfono</label>
+                                    <p class="fw-bold">
+                                        <i class="bi bi-telephone"></i>
+                                        @Model.Telefono
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Estadísticas de Préstamos -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i>
+                        Estadísticas de Préstamos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="p-3 border-end">
+                                <i class="bi bi-bookmark-check" style="font-size: 2.5rem; color: #0d6efd;"></i>
+                                <h5 class="mt-2 text-muted">Total Préstamos</h5>
+                                <h2 class="fw-bold text-primary">@ViewBag.TotalPrestamos</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border-end">
+                                <i class="bi bi-clock-history" style="font-size: 2.5rem; color: #198754;"></i>
+                                <h5 class="mt-2 text-muted">Préstamos Activos</h5>
+                                <h2 class="fw-bold text-success">@ViewBag.PrestamosActivos</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-exclamation-triangle" style="font-size: 2.5rem; color: #dc3545;"></i>
+                                <h5 class="mt-2 text-muted">Préstamos Atrasados</h5>
+                                <h2 class="fw-bold text-danger">@ViewBag.PrestamosAtrasados</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            @if (ViewBag.PrestamosAtrasados > 0)
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Atención:</strong> Este usuario tiene <strong>@ViewBag.PrestamosAtrasados</strong> préstamo(s) atrasado(s).
+                </div>
+            }
+
+            <!-- Botones de Acción (Solo Administrador) -->
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Acciones Administrativas</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Activo)
+                        {
+                            <form asp-action="ToggleActivo" asp-route-id="@Model.Id_Usuario" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está seguro de bloquear este usuario?')">
+                                    <i class="bi bi-lock-fill"></i> Bloquear Usuario
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="ToggleFalse" asp-route-id="@Model.Id_Usuario" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success" onclick="return confirm('¿Está seguro de desbloquear este usuario?')">
+                                    <i class="bi bi-unlock-fill"></i> Desbloquear Usuario
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-end {
+        border-right: 1px solid #dee2e6;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>

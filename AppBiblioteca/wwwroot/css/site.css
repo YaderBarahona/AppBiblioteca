@@ -1,0 +1,230 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    /* background-color: #0B5345;*/
+    background: linear-gradient(to bottom, #0B5345 0%, #033A30 50%, #000000 100%);
+    color: white;
+}
+
+
+
+
+
+
+
+/* 2) NAVBAR SEMITRANSPARENTE */
+.navbar-accent {
+    background-color: rgba(5, 79, 68, 0.9);
+    
+    overflow: visible;
+}
+
+    /* forzar texto blanco */
+    .navbar-accent .nav-link,
+    .navbar-accent .navbar-brand {
+        color: #fff !important;
+    }
+
+
+
+@media (max-width: 991.98px) {
+    /* Posiciona el collapse sobre la imagen, justo bajo la píldora */
+    .navbar-accent .navbar-collapse {
+        position: absolute !important;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: rgba(5, 79, 68, 0.95);
+        border-radius: 1rem 1rem 1rem 1rem !important; /* sólo esquinas inferiores */
+        margin: 5px;
+        padding: 0.5rem 1rem;
+        overflow-y: auto;
+        max-height: 50vh; /* si hay muchos ítems, permite scroll */
+        z-index: 1000;
+    }
+
+    /* Fuerza lista vertical */
+    .navbar-accent .navbar-nav {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar-accent .nav-link {
+        padding: 0.5rem 0;
+        color: #fff !important;
+    }
+}
+
+
+
+
+
+.contenido.bg-color {
+    background-color: #F3FFFB;
+}
+
+
+
+
+
+
+/*boton apagar*/
+.btn-power {
+    width: 20px;
+    height: 20px;
+    background-color: #dc3545; /* rojo tipo Bootstrap btn-danger */
+    color: white;
+    border: none;
+    border-radius: 50%; /* círculo perfecto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-power:hover {
+        background-color: #b02a37; /* rojo más oscuro al pasar el mouse */
+    }
+
+    .btn-power i {
+        font-size: 15px;
+    }
+
+
+
+
+
+
+
+
+/*tabla*/
+.table-rounded {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden; /* importante para que se recorte bien */
+}
+
+thead.table-bg th {
+    background-color: #283847 !important;
+    color: #ffffff !important;
+}
+
+
+
+
+/*div con sombra*/
+.card-glow {
+    background-color: rgba(255, 255, 255, 0.6); /* Blanco con 70% opacidad */
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* sombra suave y realista */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+
+
+.encabezado-biblioteca {
+    /*background-image: url('/images/header-biblioteca.png');*/
+    background-image: linear-gradient(rgba(5, 79, 68, 0.15), rgba(5, 79, 68, 0.15)), /* degradado */
+    url('/images/header-biblioteca.png');
+    background-size: cover;
+    background-position: center;
+    border-bottom: 3px solid #054f44;
+    min-height: 350px;
+    width: 100%;
+    z-index: 10;
+}
+
+
+
+
+
+
+
+    /* Para que el contenido interno no quede bajo la capa:
+   envuélvelo en un contenedor con z-index */
+    .encabezado-biblioteca .overlay {
+        position: relative;
+        z-index: 1;
+    }
+
+
+
+
+/* cuando la pantalla se reduce a menos de 350px */
+@media (max-width: 350px) {
+    /* Haz que el contenedor principal de header cambie a columna */
+    .encabezado-biblioteca .overlay {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+        /* Añade espacio encima del botón */
+        .encabezado-biblioteca .overlay > a.btn {
+            margin-top: 0.75rem;
+            align-self: flex-start; /* para que no estire todo el ancho */
+        }
+
+        /* Opcional: fuerza que el logo/texto no se comprima */
+        .encabezado-biblioteca .overlay > .d-flex {
+            width: 100%;
+        }
+}
+
+
+.logo-ctp {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%;
+    background-color: white;
+    padding: 5px;
+}
+
+
+
+
+
+/* Switch de Bootstrap en estado CHECKED */
+.form-check-input:checked {
+    background-color: #198754; /* verde éxito de Bootstrap */
+    border-color: #198754;
+}
+/* Sombra al enfocar */
+.form-check-input:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 .25rem rgba(25, 135, 84, .25);
+}
+
+
+
+/*Check box de autores en la vista create de materiales*/
+.checkbox-box {
+    max-height: 100px; /* altura máxima del recuadro */
+    overflow-y: auto; /* habilita scroll vertical */
+    padding: 0.5rem; /* un poco de espacio interior */
+    border: 1px solid #dee2e6; /* borde ligero, como Bootstrap */
+    border-radius: 0.25rem;
+    background: #f8f9fa; /* fondo suave */
+}

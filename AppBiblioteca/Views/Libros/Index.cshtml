@@ -1,0 +1,39 @@
+﻿@model IEnumerable<AppBiblioteca.Models.Libro>
+
+<h2>Libros Disponibles</h2>
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Categoría</th>
+            <th>Disponibles</th>
+                            @if (User.IsInRole("Estudiante") || User.IsInRole("Funcionario"))
+                    {
+            <th>Acción</th>
+            }
+
+        </tr>
+    </thead>
+    <tbody>
+ 
+            <tr>
+                <td>Titulo</td>
+                <td>Autor</td>
+                <td>Categoria</td>
+                <td>CantidadDisponible</td>
+                
+                @if (User.IsInRole("Estudiante") || User.IsInRole("Funcionario"))
+                    {
+                <td>
+                        <form asp-controller="Prestamos" asp-action="Reservar" method="post">
+                            <input type="hidden" name="idLibro" value="Id" />
+                            <button class="btn btn-primary btn-sm">Reservar</button>
+                        </form>
+                </td>
+                    }
+               
+            </tr>
+        
+    </tbody>
+</table>

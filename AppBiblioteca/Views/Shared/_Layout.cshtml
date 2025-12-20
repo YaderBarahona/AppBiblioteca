@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AppBiblioteca</title>
+
+    <!-- 1) Bootstrap desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 2) Bootstrap íconos (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- 3) Tus estilos personalizados -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" />
+ 
+
+
+
+
+
+</head>
+<body>
+    
+
+    <header class="encabezado-biblioteca text-white">
+        
+        @*<div class="container d-flex justify-content-between align-items-center py-3 px-4">*@
+            <div class="overlay container d-flex justify-content-between align-items-center py-3 px-4">
+            <div class="d-flex align-items-center gap-3">
+                <img src="~/images/logo.png" alt="Logo" class="logo-ctp">
+                <div>
+                    <h4 class="mb-0 fw-bold">BIBLIOTECA</h4>
+                    <small>CTP de Jicaral</small>
+                </div>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+            @using System.Security.Claims
+                var role = User.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Role)?
+                .Value ?? "Sin rol";
+
+                <div class="d-flex ms-auto flex-column align-items-end text-white">
+
+                <div class="d-flex  align-items-center text-white">
+
+                        <i class="bi bi-person-circle me-1 fs-5"></i>
+
+                    <!-- <span class="fw-bold me-1">@role: @User.Identity.Name </span> -->
+
+                        <span class="fw-bold">@role </span>
+                    
+
+
+                </div>
+
+
+
+
+                <div class="d-flex align-items-center text-white">
+
+
+                    <span class="fw-bold me-1">@User.Identity.Name </span>
+
+                    <form method="post" asp-controller="Auth" asp-action="Logout">
+                            <button type="submit" class="btn-power" title="Salir"><i class="bi bi-power"></i></button>
+                    </form>
+
+                </div>
+
+                </div>
+
+            }
+            else
+            {
+
+
+                <a class="btn btn-dark  rounded-pill " asp-controller="Auth" asp-action="Login" title="Ingresar">Ingresar</a>
+                
+            }
+        </div>
+
+
+
+
+        <div class="container mt-5 mb-5 ">
+       
+
+
+
+        <!-- menu principal -->
+            <nav class="navbar navbar-expand-lg navbar-light navbar-accent px-4 rounded-pill ">
+            <div class="container-fluid">
+
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index" title="Inicio"> <i class="bi bi-house-door-fill"></i></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="menuPrincipal">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                       
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   id="librosDropdown"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Libros
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="librosDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Materiales"
+                                           asp-action="Index">
+                                            Materiales
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Paises"
+                                           asp-action="Index">
+                                            Paises
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Autores"
+                                           asp-action="Index">
+                                            Autores
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Editoriales"
+                                           asp-action="Index">
+                                            Editoriales
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Categorias"
+                                           asp-action="Index">
+                                            Categorías
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               id="recursosDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="bi bi-mortarboard-fill"></i> Recursos
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="recursosDropdown">
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Recursos"
+                                       asp-action="Index">
+                                        <i class="bi bi-house"></i> Inicio de Recursos
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Recursos"
+                                       asp-action="Buscar">
+                                        <i class="bi bi-search"></i> Buscar Recursos
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   id="consultasDropdown"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Consultas
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="consultasDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Consultas"
+                                           asp-action="BuscarMateriales">
+                                            <i class="bi bi-book"></i> Buscar Materiales
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Consultas"
+                                           asp-action="BuscarUsuarios">
+                                            <i class="bi bi-people"></i> Buscar Usuarios
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Consultas"
+                                           asp-action="HistorialPrestamos">
+                                            <i class="bi bi-clock-history"></i> Historial de Préstamos
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Consultas"
+                                           asp-action="Estadisticas">
+                                            <i class="bi bi-bar-chart"></i> Estadísticas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="ContenidosExternos" asp-action="Index">
+                                    <i class="bi bi-cloud-arrow-up"></i> Contenidos Externos
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+                        {
+                            @*<li class="nav-item">
+                                    <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                                </li>
+                                *@
+
+
+
+
+
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   id="usuariosDropdown"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Usuarios
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Usuarios"
+                                               asp-action="UsuariosTrue">
+                                            Activos
+                                        </a>
+                                    </li>
+                                    <li> 
+                                        <a class="dropdown-item"
+                                           asp-controller="Usuarios"
+                                           asp-action="UsuariosFalse">
+                                            Bloqueados
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   id="reportesDropdown"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <i class="bi bi-bar-chart-fill"></i> Reportes
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="reportesDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Reportes"
+                                           asp-action="Dashboard">
+                                            <i class="bi bi-speedometer2"></i> Dashboard
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Reportes"
+                                           asp-action="Prestamos">
+                                            <i class="bi bi-calendar-range"></i> Préstamos por Período
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Reportes"
+                                           asp-action="Atrasos">
+                                            <i class="bi bi-exclamation-triangle"></i> Atrasos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Reportes"
+                                           asp-action="Disponibilidad">
+                                            <i class="bi bi-check-circle"></i> Disponibilidad
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Reportes"
+                                           asp-action="RecursosExternos">
+                                            <i class="bi bi-cloud-arrow-up"></i> Recursos Externos
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        }
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+        </div>
+    </header>
+
+        <!-- contenido -->
+      
+
+        @*
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AppBiblioteca</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>*@
+
+
+
+           
+        <main role="main" class="container my-4">
+        <div class="card card-glow mx-auto p-4">
+                    @RenderBody()
+        </div>
+                </main>
+          
+        
+
+        <footer class="border-top footer text-muted container mt-4" >
+            <div class="container text-white">
+            &copy; 2025 - Biblioteca CTP de Jicaral - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+
+ 
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JS (jQuery y Bootstrap ya incluidos antes) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+
+ 
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

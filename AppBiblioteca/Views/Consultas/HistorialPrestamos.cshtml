@@ -1,0 +1,188 @@
+﻿@model AppBiblioteca.Models.HistorialPrestamosViewModel
+@{
+    ViewData["Title"] = "Historial de Préstamos";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">📋 Historial de Préstamos</h2>
+                    <p class="text-muted">Consulta completa del historial de préstamos del sistema</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros de Búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="HistorialPrestamos" method="post">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="IdUsuario" class="form-label">Usuario</label>
+                        <select asp-for="IdUsuario" asp-items="Model.Usuarios" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="IdEstado" class="form-label">Estado</label>
+                        <select asp-for="IdEstado" asp-items="Model.Estados" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ConAtraso" class="form-label">Atraso</label>
+                        <select asp-for="ConAtraso" asp-items="Model.FiltroAtraso" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="FechaDesde" class="form-label">Fecha Desde</label>
+                        <input asp-for="FechaDesde" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="FechaHasta" class="form-label">Fecha Hasta</label>
+                        <input asp-for="FechaHasta" type="date" class="form-control" />
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a asp-action="HistorialPrestamos" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    @if (Model.HasSearched)
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i> Resultados de Búsqueda
+                    @if (Model.HasResults)
+                    {
+                        <span class="badge bg-warning text-dark">@Model.Resultados.Count</span>
+                    }
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.HasResults)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-warning">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Fecha Devolución</th>
+                                    <th>Fecha Devuelto</th>
+                                    <th>Días Atraso</th>
+                                    <th>Materiales</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var prestamo in Model.Resultados)
+                                {
+                                    <tr class="@(prestamo.TN_DiasAtraso > 0 && prestamo.TN_Id_Estado == 2 ? "table-danger" : "")">
+                                        <td><strong>#@prestamo.TN_Id_Prestamo</strong></td>
+                                        <td>
+                                            <div>
+                                                <strong>@prestamo.NombreUsuario</strong>
+                                                <br>
+                                                <small class="text-muted">@prestamo.EmailUsuario</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (prestamo.EstadoNombre == "Reservado")
+                                            {
+                                                <span class="badge bg-info text-dark">@prestamo.EstadoNombre</span>
+                                            }
+                                            else if (prestamo.EstadoNombre == "Prestado")
+                                            {
+                                                <span class="badge bg-primary">@prestamo.EstadoNombre</span>
+                                            }
+                                            else if (prestamo.EstadoNombre == "Devuelto")
+                                            {
+                                                <span class="badge bg-success">@prestamo.EstadoNombre</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">@prestamo.EstadoNombre</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (prestamo.TF_FechaPrestamo.HasValue)
+                                            {
+                                                @prestamo.TF_FechaPrestamo.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (prestamo.TF_FechaDevolucion.HasValue)
+                                            {
+                                                @prestamo.TF_FechaDevolucion.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (prestamo.TF_FechaDevuelto.HasValue)
+                                            {
+                                                @prestamo.TF_FechaDevuelto.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (prestamo.TN_DiasAtraso > 0)
+                                            {
+                                                <span class="badge bg-danger">@prestamo.TN_DiasAtraso días</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">0</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@prestamo.CantidadMateriales</span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Prestamos" asp-action="Details" asp-route-id="@prestamo.TN_Id_Prestamo"
+                                               class="btn btn-sm btn-outline-warning rounded-pill">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        No se encontraron préstamos con los criterios especificados.
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

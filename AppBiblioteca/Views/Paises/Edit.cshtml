@@ -1,0 +1,47 @@
+﻿@model AppBiblioteca.Models.Pais
+@{
+    ViewData["Title"] = "Editar País";
+}
+
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id_Pais" />
+
+    <div class="mb-5 pt-5">
+    <h2 class=" text-center text-dark">@ViewData["Title"]</h2>
+    </div>
+
+    <div class="mb-3 card-glow">
+       
+        <label asp-for="NombrePais" class="form-label">País</label>
+        <input asp-for="NombrePais" class="form-control rounded-pill" />
+        <span asp-validation-for="NombrePais" class="text-danger"></span>
+
+        <div class="mt-3">
+    <button type="submit" class="btn btn-dark rounded-pill">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary rounded-pill ms-2">Cancelar</a>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          // error...
+          var err = '@Html.Raw(TempData["ErrorMessage"])';
+          if (err) {
+            Swal.fire({ icon:'error', title:'¡Ups!', text: err });
+          }
+
+          // éxito...
+          var ok = '@Html.Raw(TempData["SuccessMessage"])';
+          if (ok) {
+            Swal.fire({ icon:'success', title:'¡Bien!', text: ok });
+          }
+        });
+    </script>
+}

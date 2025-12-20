@@ -1,0 +1,165 @@
+﻿@model AppBiblioteca.Models.Material
+
+@{
+    ViewData["Title"] = "Detalles del Material";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="bi bi-book-fill text-primary"></i>
+                    Detalles del Material
+                </h2>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <!-- Card Principal -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@Model.Titulo</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Columna Izquierda -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="text-muted small">ISBN</label>
+                                <p class="fw-bold">@Model.ISBN</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Categoría</label>
+                                <p class="fw-bold">
+                                    <span class="badge bg-info text-dark">@Model.CategoriaNombre</span>
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Editorial</label>
+                                <p class="fw-bold">@Model.EditorialNombre</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Autor(es)</label>
+                                <p class="fw-bold">@Model.Autores</p>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="text-muted small">Año de Publicación</label>
+                                <p class="fw-bold">@Model.AnioPublicacion</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Idioma</label>
+                                <p class="fw-bold">@Model.Idioma</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Estado</label>
+                                <p class="fw-bold">
+                                    @if (Model.Estado == "Activo")
+                                    {
+                                        <span class="badge bg-success">@Model.Estado</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">@Model.Estado</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Disponibilidad</label>
+                                <div class="progress" style="height: 25px;">
+                                    @{
+                                        var porcentaje = Model.Cantidad > 0 ? (Model.Disponibles * 100.0 / Model.Cantidad) : 0;
+                                        var progressColor = porcentaje > 50 ? "bg-success" : (porcentaje > 20 ? "bg-warning" : "bg-danger");
+                                    }
+                                    <div class="progress-bar @progressColor" role="progressbar"
+                                         style="width: @porcentaje%;"
+                                         aria-valuenow="@Model.Disponibles"
+                                         aria-valuemin="0"
+                                         aria-valuemax="@Model.Cantidad">
+                                        @Model.Disponibles / @Model.Cantidad
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Estadísticas -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm mb-3">
+                        <div class="card-body">
+                            <i class="bi bi-stack" style="font-size: 2rem; color: #0d6efd;"></i>
+                            <h5 class="card-title mt-2">Total Ejemplares</h5>
+                            <h3 class="text-primary fw-bold">@Model.Cantidad</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm mb-3">
+                        <div class="card-body">
+                            <i class="bi bi-check-circle" style="font-size: 2rem; color: #198754;"></i>
+                            <h5 class="card-title mt-2">Disponibles</h5>
+                            <h3 class="text-success fw-bold">@Model.Disponibles</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm mb-3">
+                        <div class="card-body">
+                            <i class="bi bi-bookmark-check" style="font-size: 2rem; color: #dc3545;"></i>
+                            <h5 class="card-title mt-2">Prestados</h5>
+                            <h3 class="text-danger fw-bold">@(Model.Cantidad - Model.Disponibles)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción (Solo Administradores) -->
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Acciones</h5>
+                    </div>
+                    <div class="card-body">
+                        <a asp-action="Edit" asp-route-id="@Model.Id_Material" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar Material
+                        </a>
+                        <a asp-action="AgregarEjemplares" asp-route-id="@Model.Id_Material" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Agregar Ejemplares
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .progress {
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>

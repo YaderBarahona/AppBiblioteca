@@ -1,0 +1,210 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Recursos Educativos";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">
+            <i class="bi bi-mortarboard-fill"></i>
+            Recursos Educativos
+        </h1>
+        <p class="lead text-muted">Explora materiales digitales compartidos por profesores</p>
+    </div>
+
+    <!-- Alertas -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Búsqueda Rápida -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <h4 class="text-primary">
+                            <i class="bi bi-search"></i> ¿Qué estás buscando?
+                        </h4>
+                    </div>
+                    <div class="d-grid gap-3 d-md-flex justify-content-center">
+                        <a asp-action="Buscar" class="btn btn-primary btn-lg">
+                            <i class="bi bi-funnel"></i> Búsqueda Avanzada
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    @if (Model.Estadisticas != null)
+    {
+        <div class="row mb-5">
+            <div class="col-12">
+                <h3 class="mb-4">
+                    <i class="bi bi-graph-up"></i> Estadísticas
+                </h3>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: #0d6efd;"></i>
+                        <h3 class="fw-bold text-primary mt-2">@Model.Estadisticas.TotalRecursos</h3>
+                        <p class="text-muted mb-0">Total de Recursos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">Top 5 Asignaturas</h6>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Estadisticas.PorAsignatura.Count > 0)
+                        {
+                            <div class="row">
+                                @foreach (var asignatura in Model.Estadisticas.PorAsignatura)
+                                {
+                                    <div class="col-md-4 mb-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-info text-dark">@asignatura.Nombre</span>
+                                            <span class="fw-bold">@asignatura.Cantidad</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">No hay datos disponibles</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Recursos Recientes -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <i class="bi bi-clock-history"></i> Recursos Recientes
+            </h3>
+        </div>
+    </div>
+
+    @if (Model.RecursosRecientes != null && Model.RecursosRecientes.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            @foreach (var recurso in Model.RecursosRecientes)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm card-hover">
+                        <div class="card-header bg-gradient-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="@recurso.TC_Icono"></i>
+                                @recurso.TC_Titulo
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-person-badge"></i> <strong>Profesor:</strong> @recurso.NombreProfesor
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-book"></i> <strong>Asignatura:</strong>
+                                    <span class="badge bg-info text-dark">@recurso.NombreAsignatura</span>
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-tag"></i> @recurso.TC_TipoContenido
+                                </small>
+                            </p>
+                            @if (!string.IsNullOrEmpty(recurso.TC_Descripcion))
+                            {
+                                <p class="card-text">
+                                    @if (recurso.TC_Descripcion.Length > 100)
+                                    {
+                                        @recurso.TC_Descripcion.Substring(0, 100)<text>...</text>
+                                    }
+                                    else
+                                    {
+                                        @recurso.TC_Descripcion
+                                    }
+                                </p>
+                            }
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> @recurso.TF_FechaCreacion.ToString("dd/MM/yyyy")
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <div class="d-flex gap-2">
+                                <a asp-action="Ver" asp-route-id="@recurso.TN_Id_Contenido"
+                                   class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="bi bi-eye"></i> Ver Detalles
+                                </a>
+                                <a href="@recurso.TC_URL" target="_blank"
+                                   class="btn btn-sm btn-success flex-fill">
+                                    <i class="bi bi-box-arrow-up-right"></i> Acceder
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mb-5">
+            <a asp-action="Buscar" class="btn btn-primary btn-lg">
+                <i class="bi bi-search"></i> Ver Todos los Recursos
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>No hay recursos disponibles en este momento.</strong>
+            Los recursos publicados por profesores aparecerán aquí.
+        </div>
+    }
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .card {
+        border-radius: 15px;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+
+    .card-footer {
+        border-radius: 0 0 15px 15px !important;
+    }
+</style>

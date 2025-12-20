@@ -1,0 +1,237 @@
+﻿@model AppBiblioteca.Models.ReportePrestamosViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Préstamos por Período";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">
+                        <i class="bi bi-calendar-range text-primary"></i>
+                        Reporte de Préstamos por Período
+                    </h2>
+                    <p class="text-muted">Consulta préstamos realizados en un rango de fechas</p>
+                </div>
+                <a asp-action="Dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Filtros -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel-fill"></i>
+                Filtros de Búsqueda
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Prestamos" method="post">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label asp-for="FechaInicio" class="form-label fw-bold"></label>
+                        <input asp-for="FechaInicio" class="form-control" type="date" />
+                        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="FechaFin" class="form-label fw-bold"></label>
+                        <input asp-for="FechaFin" class="form-control" type="date" />
+                        <span asp-validation-for="FechaFin" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Generar Reporte
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    @if (Model.Prestamos.Any())
+    {
+        <!-- Resumen -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h3 class="text-primary fw-bold">@Model.TotalPrestamos</h3>
+                        <p class="text-muted mb-0">Préstamos Encontrados</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-success fw-bold">
+                            @Model.Prestamos.Count(p => p.EstadoPrestamo == "Devuelto")
+                        </h3>
+                        <p class="text-muted mb-0">Devueltos</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-danger fw-bold">
+                            @Model.Prestamos.Count(p => p.TN_DiasAtraso > 0)
+                        </h3>
+                        <p class="text-muted mb-0">Con Atrasos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Préstamos -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-table"></i>
+                        Detalle de Préstamos
+                    </h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-success" onclick="exportToExcel()">
+                            <i class="bi bi-file-earmark-excel"></i> Excel
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="exportToPDF()">
+                            <i class="bi bi-file-earmark-pdf"></i> PDF
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Imprimir
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tablePrestamos" class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Estado</th>
+                                <th>F. Préstamo</th>
+                                <th>F. Devolución</th>
+                                <th>F. Devuelto</th>
+                                <th class="text-center">Días Atraso</th>
+                                <th class="text-center">Materiales</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prestamo in Model.Prestamos.OrderByDescending(p => p.TF_FechaPrestamo))
+                            {
+                                <tr>
+                                    <td class="fw-bold">#@prestamo.TN_Id_Prestamo</td>
+                                    <td>@prestamo.NombreUsuario</td>
+                                    <td><small>@prestamo.TC_Email</small></td>
+                                    <td>
+                                        @if (prestamo.EstadoPrestamo == "Activo")
+                                        {
+                                            <span class="badge bg-info text-dark">Activo</span>
+                                        }
+                                        else if (prestamo.EstadoPrestamo == "Devuelto")
+                                        {
+                                            <span class="badge bg-success">Devuelto</span>
+                                        }
+                                        else if (prestamo.EstadoPrestamo == "Atrasado")
+                                        {
+                                            <span class="badge bg-danger">Atrasado</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@prestamo.EstadoPrestamo</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (prestamo.TF_FechaPrestamo.HasValue)
+                                        {
+                                            @prestamo.TF_FechaPrestamo.Value.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (prestamo.TF_FechaDevolucion.HasValue)
+                                        {
+                                            @prestamo.TF_FechaDevolucion.Value.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (prestamo.TF_FechaDevuelto.HasValue)
+                                        {
+                                            @prestamo.TF_FechaDevuelto.Value.ToString("dd/MM/yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (prestamo.TN_DiasAtraso > 0)
+                                        {
+                                            <span class="badge bg-danger">@prestamo.TN_DiasAtraso días</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">@prestamo.CantidadMateriales</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-controller="Prestamos" asp-action="Details" asp-route-id="@prestamo.TN_Id_Prestamo"
+                                           class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.FechaInicio.HasValue || Model.FechaFin.HasValue)
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i>
+            No se encontraron préstamos en el período seleccionado.
+        </div>
+    }
+</div>
+
+<style media="print">
+    .btn, .card-header .btn-group, nav, header, footer {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+    }
+</style>
+
+@section Scripts {
+<script>
+    function exportToExcel() {
+        Swal.fire({
+            icon: 'info',
+            title: 'Exportar a Excel',
+            text: 'Funcionalidad de exportación en desarrollo',
+            confirmButtonText: 'Entendido'
+        });
+    }
+
+    function exportToPDF() {
+        Swal.fire({
+            icon: 'info',
+            title: 'Exportar a PDF',
+            text: 'Funcionalidad de exportación en desarrollo',
+            confirmButtonText: 'Entendido'
+        });
+    }
+</script>
+}

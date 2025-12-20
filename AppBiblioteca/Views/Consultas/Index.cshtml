@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Consultas Bibliotecarias";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold">📊 Consultas Bibliotecarias</h2>
+            <p class="text-muted">Sistema de búsqueda y análisis de información de la biblioteca</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Buscar Materiales -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-book" style="font-size: 3rem; color: #0d6efd;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Buscar Materiales</h5>
+                    <p class="card-text text-muted small">Búsqueda avanzada de libros con múltiples filtros</p>
+                    <a asp-action="BuscarMateriales" class="btn btn-primary btn-sm rounded-pill mt-2">
+                        <i class="bi bi-search"></i> Buscar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buscar Usuarios -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-people" style="font-size: 3rem; color: #198754;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Buscar Usuarios</h5>
+                    <p class="card-text text-muted small">Consulta de usuarios por nombre, email o rol</p>
+                    <a asp-action="BuscarUsuarios" class="btn btn-success btn-sm rounded-pill mt-2">
+                        <i class="bi bi-search"></i> Buscar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Préstamos -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-clock-history" style="font-size: 3rem; color: #ffc107;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Historial de Préstamos</h5>
+                    <p class="card-text text-muted small">Consulta historial completo de préstamos</p>
+                    <a asp-action="HistorialPrestamos" class="btn btn-warning btn-sm rounded-pill mt-2">
+                        <i class="bi bi-search"></i> Buscar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-bar-chart" style="font-size: 3rem; color: #dc3545;"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Estadísticas</h5>
+                    <p class="card-text text-muted small">Dashboard con métricas y análisis</p>
+                    <a asp-action="Estadisticas" class="btn btn-danger btn-sm rounded-pill mt-2">
+                        <i class="bi bi-graph-up"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Acerca de las Consultas</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Búsqueda de Materiales</h6>
+                            <ul class="small text-muted">
+                                <li>Filtrar por título, ISBN, categoría o autor</li>
+                                <li>Buscar por rango de años de publicación</li>
+                                <li>Ver disponibilidad en tiempo real</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-success">Búsqueda de Usuarios</h6>
+                            <ul class="small text-muted">
+                                <li>Consultar usuarios por nombre o email</li>
+                                <li>Filtrar por rol (Estudiante, Bibliotecario, etc.)</li>
+                                <li>Ver historial de préstamos por usuario</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <h6 class="fw-bold text-warning">Historial de Préstamos</h6>
+                            <ul class="small text-muted">
+                                <li>Búsqueda por usuario, fecha o estado</li>
+                                <li>Identificar préstamos con atraso</li>
+                                <li>Exportar reportes de préstamos</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <h6 class="fw-bold text-danger">Estadísticas</h6>
+                            <ul class="small text-muted">
+                                <li>Métricas generales de materiales y préstamos</li>
+                                <li>Top 10 materiales más prestados</li>
+                                <li>Usuarios más activos del sistema</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+</style>

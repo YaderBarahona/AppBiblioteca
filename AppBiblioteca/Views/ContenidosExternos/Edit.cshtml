@@ -1,0 +1,131 @@
+﻿@model AppBiblioteca.Models.ContenidoExterno
+
+@{
+    ViewData["Title"] = "Editar Contenido Externo";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="bi bi-pencil-square text-warning"></i>
+                    Editar Contenido Externo
+                </h2>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <!-- Alertas -->
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Información del Autor -->
+            <div class="alert alert-info">
+                <i class="bi bi-person-badge"></i>
+                <strong>Publicado por:</strong> @Model.NombreProfesor
+                <br>
+                <i class="bi bi-calendar"></i>
+                <strong>Fecha de creación:</strong> @Model.TF_FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+            </div>
+
+            <!-- Formulario -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Editar Información del Contenido
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="TN_Id_Contenido" />
+                        <input type="hidden" asp-for="TN_Id_Usuario" />
+                        <input type="hidden" asp-for="TF_FechaCreacion" />
+                        <input type="hidden" asp-for="TB_Activo" />
+
+                        <div class="mb-3">
+                            <label asp-for="TC_Titulo" class="form-label"></label>
+                            <input asp-for="TC_Titulo" class="form-control" placeholder="Ingrese el título del contenido">
+                            <span asp-validation-for="TC_Titulo" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TN_Id_Asignatura" class="form-label"></label>
+                                <select asp-for="TN_Id_Asignatura" class="form-select" asp-items="Model.AsignaturasList">
+                                    <option value="">-- Seleccione una asignatura --</option>
+                                </select>
+                                <span asp-validation-for="TN_Id_Asignatura" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TN_Id_TipoContenido" class="form-label"></label>
+                                <select asp-for="TN_Id_TipoContenido" class="form-select" asp-items="Model.TiposContenidoList">
+                                    <option value="">-- Seleccione un tipo --</option>
+                                </select>
+                                <span asp-validation-for="TN_Id_TipoContenido" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TC_URL" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-link-45deg"></i>
+                                </span>
+                                <input asp-for="TC_URL" class="form-control"
+                                       placeholder="https://ejemplo.com/recurso">
+                            </div>
+                            <span asp-validation-for="TC_URL" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Ingrese la URL completa del recurso externo
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TC_Descripcion" class="form-label"></label>
+                            <textarea asp-for="TC_Descripcion" class="form-control" rows="4"
+                                      placeholder="Descripción del contenido (opcional)"></textarea>
+                            <span asp-validation-for="TC_Descripcion" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Proporcione una breve descripción del contenido (máximo 1000 caracteres)
+                            </small>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning text-dark">
+                                <i class="bi bi-save"></i> Actualizar Contenido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>

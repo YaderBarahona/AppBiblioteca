@@ -1,0 +1,181 @@
+﻿@model AppBiblioteca.Models.RecursoExterno
+
+@{
+    ViewData["Title"] = "Recurso: " + Model.TC_Titulo;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="bi bi-file-text text-primary"></i>
+                    Recurso Educativo
+                </h2>
+                <a asp-action="Buscar" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Búsqueda
+                </a>
+            </div>
+
+            <!-- Card Principal -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="@Model.TC_Icono me-2"></i>
+                        @Model.TC_Titulo
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Columna Izquierda -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="text-muted small">Tipo de Recurso</label>
+                                <p class="fw-bold">
+                                    <span class="badge bg-secondary fs-6">@Model.TC_TipoContenido</span>
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Asignatura</label>
+                                <p class="fw-bold">
+                                    <span class="badge bg-info text-dark fs-6">@Model.NombreAsignatura</span>
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Publicado por</label>
+                                <p class="fw-bold fs-5">
+                                    <i class="bi bi-person-badge text-primary"></i> @Model.NombreProfesor
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="text-muted small">Fecha de Publicación</label>
+                                <p class="fw-bold">
+                                    <i class="bi bi-calendar-check text-success"></i>
+                                    @Model.TF_FechaCreacion.ToString("dd/MM/yyyy")
+                                </p>
+                            </div>
+
+                            @if (Model.TF_FechaModificacion.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label class="text-muted small">Última Actualización</label>
+                                    <p class="fw-bold">
+                                        <i class="bi bi-calendar-event text-warning"></i>
+                                        @Model.TF_FechaModificacion.Value.ToString("dd/MM/yyyy")
+                                    </p>
+                                </div>
+                            }
+
+                            <div class="mb-3">
+                                <label class="text-muted small">Enlace al Recurso</label>
+                                <p class="fw-bold">
+                                    <a href="@Model.TC_URL" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-link-45deg"></i> Ver URL
+                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    @if (!string.IsNullOrEmpty(Model.TC_Descripcion))
+                    {
+                        <div class="mt-4">
+                            <label class="text-muted small">Descripción del Recurso</label>
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <p class="mb-0 text-justify">@Model.TC_Descripcion</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Card de Acceso al Recurso -->
+            <div class="card shadow-lg mb-4 border-success">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-play-circle-fill"></i>
+                        Acceder al Recurso Externo
+                    </h5>
+                </div>
+                <div class="card-body text-center py-5">
+                    <p class="lead mb-4">
+                        Haz clic en el botón para acceder al contenido educativo:
+                    </p>
+                    <a href="@Model.TC_URL" target="_blank" class="btn btn-success btn-lg px-5 py-3">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>
+                        Ir al Recurso
+                    </a>
+                    <p class="text-muted mt-4 mb-0">
+                        <small>
+                            <i class="bi bi-info-circle"></i>
+                            El recurso se abrirá en una nueva pestaña del navegador
+                        </small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightbulb"></i> Información Importante
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Este recurso ha sido compartido por el profesor <strong>@Model.NombreProfesor</strong> para la asignatura de <strong>@Model.NombreAsignatura</strong>.</li>
+                        <li>El contenido está alojado en un sitio externo y se abrirá en una nueva ventana.</li>
+                        <li>Asegúrate de tener una conexión a internet activa para acceder al recurso.</li>
+                        <li>Si el enlace no funciona o tienes dudas sobre el contenido, contacta al profesor responsable.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Botón para ver más recursos de la misma asignatura -->
+            <div class="text-center mt-4 mb-4">
+                <a asp-action="PorAsignatura" asp-route-id="@Model.TN_Id_Asignatura"
+                   class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-book"></i> Ver más recursos de @Model.NombreAsignatura
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card {
+        border-radius: 15px;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+
+    .text-justify {
+        text-align: justify;
+    }
+
+    .card-body .btn-success {
+        transition: all 0.3s ease;
+    }
+
+        .card-body .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(25, 135, 84, 0.3);
+        }
+</style>

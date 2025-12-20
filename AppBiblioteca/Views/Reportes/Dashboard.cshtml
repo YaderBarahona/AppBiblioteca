@@ -1,0 +1,566 @@
+﻿@model AppBiblioteca.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard - Reportes y Estadísticas";
+}
+
+<!-- Chart.js desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold">
+                <i class="bi bi-bar-chart-fill text-primary"></i>
+                Dashboard - Reportes y Estadísticas
+            </h2>
+            <p class="text-muted">Información clave actualizada en tiempo real</p>
+        </div>
+    </div>
+
+    <!-- Estadísticas Generales - Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Card: Materiales -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Materiales</h6>
+                            <h3 class="mb-0 fw-bold">@Model.TotalMateriales</h3>
+                            <small class="opacity-75">@Model.TotalEjemplares ejemplares totales</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-book-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Disponibilidad -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Disponibles</h6>
+                            <h3 class="mb-0 fw-bold">@Model.EjemplaresDisponibles</h3>
+                            <small class="opacity-75">@Model.PorcentajeDisponibilidad% disponibilidad</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-check-circle-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Préstamos Activos -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Préstamos Activos</h6>
+                            <h3 class="mb-0 fw-bold">@Model.PrestamosActivos</h3>
+                            <small class="opacity-75">@Model.ReservasPendientes reservas pendientes</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-arrow-left-right fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Atrasos -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Atrasados</h6>
+                            <h3 class="mb-0 fw-bold">@Model.PrestamosAtrasados</h3>
+                            <small class="opacity-75">Requieren atención</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-exclamation-triangle-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda Fila de Estadísticas -->
+    <div class="row g-3 mb-4">
+        <!-- Card: Usuarios -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-secondary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Usuarios Totales</h6>
+                            <h3 class="mb-0 fw-bold">@Model.TotalUsuarios</h3>
+                            <small class="opacity-75">@Model.TotalEstudiantes estudiantes</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-people-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Recursos Externos -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Recursos Externos</h6>
+                            <h3 class="mb-0 fw-bold">@Model.TotalRecursosExternos</h3>
+                            <small class="opacity-75">Contenidos digitales</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-cloud-arrow-up-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Tasa de Préstamos -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card border-0 shadow-sm h-100 card-stat bg-dark text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1 opacity-75">Tasa de Préstamos</h6>
+                            <h3 class="mb-0 fw-bold">@Model.TasaPrestamos%</h3>
+                            <small class="opacity-75">Utilización de ejemplares</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-graph-up-arrow fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos - Primera Fila -->
+    <div class="row g-3 mb-4">
+        <!-- Gráfico: Préstamos por Estado (Pie) -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-pie-chart-fill text-primary"></i>
+                        Préstamos por Estado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartPrestamosPorEstado" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico: Préstamos por Categoría (Bar) -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-bar-chart-fill text-success"></i>
+                        Préstamos por Categoría
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartPrestamosPorCategoria" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico: Préstamos por Mes (Line) -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-graph-up text-info"></i>
+                        Tendencia de Préstamos (Últimos 12 Meses)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartPrestamosPorMes" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 10 - Tablas -->
+    <div class="row g-3 mb-4">
+        <!-- Top 10 Materiales Más Prestados -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-trophy-fill text-warning"></i>
+                        Top 10 Materiales Más Prestados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Título</th>
+                                    <th>Categoría</th>
+                                    <th class="text-center">Préstamos</th>
+                                    <th class="text-center">Disponibles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int rankMaterial = 1;
+                                }
+                                @foreach (var material in Model.Top10Materiales)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@rankMaterial</td>
+                                        <td>
+                                            <a asp-controller="Materiales" asp-action="Details" asp-route-id="@material.TN_Id_Material"
+                                               class="text-decoration-none">
+                                                @material.TC_Titulo
+                                            </a>
+                                            <br />
+                                            <small class="text-muted">ISBN: @material.TC_ISBN</small>
+                                        </td>
+                                        <td><span class="badge bg-secondary">@material.TC_Categoria</span></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">@material.VecesPrestado</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge @(material.TN_Disponibles > 0 ? "bg-success" : "bg-danger")">
+                                                @material.TN_Disponibles/@material.TN_Cantidad
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    rankMaterial++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 10 Usuarios Más Activos -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-star-fill text-success"></i>
+                        Top 10 Usuarios Más Activos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center">Activos</th>
+                                    <th class="text-center">Atrasados</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int rankUsuario = 1;
+                                }
+                                @foreach (var usuario in Model.Top10Usuarios)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@rankUsuario</td>
+                                        <td>
+                                            <a asp-controller="Usuarios" asp-action="Details" asp-route-id="@usuario.TN_Id_Usuario"
+                                               class="text-decoration-none">
+                                                @usuario.NombreCompleto
+                                            </a>
+                                            <br />
+                                            <small class="text-muted">@usuario.TC_Email</small>
+                                        </td>
+                                        <td><span class="badge bg-info text-dark">@usuario.Rol</span></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">@usuario.TotalPrestamos</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">@usuario.PrestamosActivos</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (usuario.PrestamosAtrasados > 0)
+                                            {
+                                                <span class="badge bg-danger">@usuario.PrestamosAtrasados</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-light text-dark">0</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    rankUsuario++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acceso Rápido a Reportes Específicos -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-file-earmark-text-fill text-primary"></i>
+                        Reportes Específicos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a asp-action="Prestamos" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-calendar-range fs-4 d-block mb-2"></i>
+                                Préstamos por Período
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a asp-action="Atrasos" class="btn btn-outline-danger w-100 py-3">
+                                <i class="bi bi-exclamation-triangle fs-4 d-block mb-2"></i>
+                                Reporte de Atrasos
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a asp-action="Disponibilidad" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-check-circle fs-4 d-block mb-2"></i>
+                                Disponibilidad
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a asp-action="RecursosExternos" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-cloud-arrow-up fs-4 d-block mb-2"></i>
+                                Recursos Externos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-stat {
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .card-stat:hover {
+            transform: translateY(-5px);
+        }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Configuración de colores
+        const colors = {
+            primary: '#0d6efd',
+            success: '#198754',
+            danger: '#dc3545',
+            warning: '#ffc107',
+            info: '#0dcaf0',
+            secondary: '#6c757d'
+        };
+
+        // 1. Gráfico de Préstamos por Estado (Pie Chart)
+        const ctxEstado = document.getElementById('chartPrestamosPorEstado').getContext('2d');
+        const dataEstado = {
+            labels: [@Html.Raw(string.Join(",", Model.PrestamosPorEstado.Select(p => $"'{p.Estado}'")))],
+            datasets: [{
+                data: [@string.Join(",", Model.PrestamosPorEstado.Select(p => p.Cantidad))],
+                backgroundColor: [
+                    colors.success,
+                    colors.info,
+                    colors.warning,
+                    colors.danger,
+                    colors.secondary
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        };
+
+        new Chart(ctxEstado, {
+            type: 'pie',
+            data: dataEstado,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Gráfico de Préstamos por Categoría (Bar Chart)
+        const ctxCategoria = document.getElementById('chartPrestamosPorCategoria').getContext('2d');
+        const dataCategoria = {
+            labels: [@Html.Raw(string.Join(",", Model.PrestamosPorCategoria.Select(p => $"'{p.Categoria}'")))],
+            datasets: [{
+                label: 'Cantidad de Préstamos',
+                data: [@string.Join(",", Model.PrestamosPorCategoria.Select(p => p.CantidadPrestamos))],
+                backgroundColor: colors.success,
+                borderColor: colors.success,
+                borderWidth: 2,
+                borderRadius: 5
+            }]
+        };
+
+        new Chart(ctxCategoria, {
+            type: 'bar',
+            data: dataCategoria,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Préstamos: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. Gráfico de Préstamos por Mes (Line Chart)
+        const ctxMes = document.getElementById('chartPrestamosPorMes').getContext('2d');
+        const dataMes = {
+            labels: [@Html.Raw(string.Join(",", Model.PrestamosPorMes.Select(p => $"'{p.NombreMes} {p.Anio}'")))],
+            datasets: [
+                {
+                    label: 'Total Préstamos',
+                    data: [@string.Join(",", Model.PrestamosPorMes.Select(p => p.TotalPrestamos))],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Devueltos',
+                    data: [@string.Join(",", Model.PrestamosPorMes.Select(p => p.Devueltos))],
+                    borderColor: colors.success,
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Atrasados',
+                    data: [@string.Join(",", Model.PrestamosPorMes.Select(p => p.Atrasados))],
+                    borderColor: colors.danger,
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        };
+
+        new Chart(ctxMes, {
+            type: 'line',
+            data: dataMes,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

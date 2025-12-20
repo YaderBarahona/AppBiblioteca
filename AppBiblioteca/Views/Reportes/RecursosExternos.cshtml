@@ -1,0 +1,366 @@
+﻿@model AppBiblioteca.Models.ReporteRecursosExternosViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Recursos Externos";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold">
+                        <i class="bi bi-cloud-arrow-up-fill text-info"></i>
+                        Reporte de Recursos Externos
+                    </h2>
+                    <p class="text-muted">Contenidos educativos digitales por asignatura y tipo</p>
+                </div>
+                <a asp-action="Dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+         @{
+        var totalRecursos = Model.Recursos.Sum(r => r.CantidadRecursos);
+
+        var recursosPorTipo = Model.Recursos
+            .Where(r => !string.IsNullOrEmpty(r.TipoContenido))
+            .GroupBy(r => r.TipoContenido)
+            .Select(g => new { Tipo = g.Key, Cantidad = g.Sum(r => r.CantidadRecursos) })
+            .OrderByDescending(x => x.Cantidad)
+            .ToList();
+
+        var top5Asignaturas = Model.Recursos
+            .GroupBy(r => r.Asignatura)
+            .Select(g => new { Asignatura = g.Key, Total = g.Sum(r => r.CantidadRecursos) })
+            .OrderByDescending(x => x.Total)
+            .Take(5)
+            .ToList();
+    }
+
+    @if (Model.Recursos.Any())
+    {
+
+        <!-- Estadísticas Generales -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            @totalRecursos
+                        </h3>
+                        <p class="mb-0">Total Recursos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            @Model.Recursos.Select(r => r.Asignatura).Distinct().Count()
+                        </h3>
+                        <p class="mb-0">Asignaturas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            @Model.Recursos.Where(r => !string.IsNullOrEmpty(r.TipoContenido)).Select(r => r.TipoContenido).Distinct().Count()
+                        </h3>
+                        <p class="mb-0">Tipos de Contenido</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+@{
+    var recursosConFecha = Model.Recursos.Where(r => r.UltimaPublicacion.HasValue).ToList();
+
+    var promedioDias = recursosConFecha.Any()
+        ? Math.Round(
+            (DateTime.Now - new DateTime(Convert.ToInt64(recursosConFecha.Average(r => r.UltimaPublicacion!.Value.Ticks))))
+            .TotalDays,
+            0
+        )
+        : 0;
+}
+                            @promedioDias días
+                        </h3>
+                        <p class="mb-0">Antigüedad Promedio</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla por Asignatura -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        Recursos por Asignatura
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-light" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Asignatura</th>
+                                <th>Tipo de Contenido</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-center">Última Publicación</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var recurso in Model.Recursos.OrderBy(r => r.Asignatura).ThenByDescending(r => r.CantidadRecursos))
+                            {
+                                var diasDesdePublicacion = recurso.UltimaPublicacion.HasValue
+                                    ? (DateTime.Now - recurso.UltimaPublicacion.Value).Days
+                                    : (int?)null;
+
+                                var estadoBadge = diasDesdePublicacion.HasValue
+                                    ? diasDesdePublicacion.Value <= 30 ? "bg-success" : diasDesdePublicacion.Value <= 90 ? "bg-warning text-dark" : "bg-secondary"
+                                    : "bg-light text-dark";
+
+                                var estadoTexto = diasDesdePublicacion.HasValue
+                                    ? diasDesdePublicacion.Value <= 30 ? "Reciente" : diasDesdePublicacion.Value <= 90 ? "Moderado" : "Antiguo"
+                                    : "Sin datos";
+
+                                <tr>
+                                    <td>
+                                        <strong>@recurso.Asignatura</strong>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(recurso.TipoContenido))
+                                        {
+                                            <span class="badge bg-primary">@recurso.TipoContenido</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info text-dark fs-6">@recurso.CantidadRecursos</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (recurso.UltimaPublicacion.HasValue)
+                                        {
+                                            <div>
+                                                @recurso.UltimaPublicacion.Value.ToString("dd/MM/yyyy")
+                                            </div>
+                                            <small class="text-muted">
+                                                (hace @diasDesdePublicacion días)
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @estadoBadge">@estadoTexto</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-controller="ContenidosExternos" asp-action="Index"
+                                           class="btn btn-sm btn-outline-primary" title="Ver contenidos">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="2">TOTAL</td>
+                                <td class="text-center">@Model.Recursos.Sum(r => r.CantidadRecursos)</td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        @if (recursosPorTipo.Any())
+        {
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart-fill"></i>
+                        Distribución por Tipo de Contenido
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var tipo in recursosPorTipo)
+                        {
+                            var porcentaje = Math.Round((tipo.Cantidad * 100.0m / Model.Recursos.Sum(r => r.CantidadRecursos)), 1);
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong>@tipo.Tipo</strong>
+                                    <span class="badge bg-primary">@tipo.Cantidad recursos (@porcentaje%)</span>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar bg-primary"
+                                         role="progressbar"
+                                         style="width: @porcentaje%"
+                                         aria-valuenow="@porcentaje"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                        @porcentaje%
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-trophy-fill"></i>
+                            Top 5 Asignaturas con Más Recursos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            @{
+                                int rank = 1;
+                            }
+                            @foreach (var item in top5Asignaturas)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-secondary me-2">@rank</span>
+                                        <strong>@item.Asignatura</strong>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill fs-6">@item.Total recursos</span>
+                                </li>
+                                rank++;
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recomendaciones -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="bi bi-lightbulb-fill"></i>
+                            Recomendaciones
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li class="mb-2">
+                                <strong>Actualización Regular:</strong>
+                                Recursos con más de 90 días de antigüedad deberían revisarse y actualizarse.
+                            </li>
+                            <li class="mb-2">
+                                <strong>Diversificación:</strong>
+                                Asignaturas con pocos recursos necesitan más contenido educativo.
+                            </li>
+                            <li class="mb-2">
+                                <strong>Calidad sobre Cantidad:</strong>
+                                Revisar periódicamente la relevancia y utilidad de los recursos existentes.
+                            </li>
+                            <li>
+                                <strong>Promoción:</strong>
+                                Dar a conocer los recursos disponibles entre estudiantes y profesores.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Adicional -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle-fill"></i>
+                    Información sobre Estados
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start mb-2">
+                            <span class="badge bg-success me-2 mt-1">Reciente</span>
+                            <small>Recursos publicados en los últimos 30 días</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start mb-2">
+                            <span class="badge bg-warning text-dark me-2 mt-1">Moderado</span>
+                            <small>Recursos publicados entre 31 y 90 días</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start mb-2">
+                            <span class="badge bg-secondary me-2 mt-1">Antiguo</span>
+                            <small>Recursos publicados hace más de 90 días</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info border-0 shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle-fill fs-1 me-3"></i>
+                <div>
+                    <h4 class="alert-heading">No hay recursos externos</h4>
+                    <p class="mb-0">Aún no se han registrado recursos externos en el sistema. Los profesores pueden comenzar a compartir contenido educativo digital.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="ContenidosExternos" asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle"></i> Agregar Primer Recurso Externo
+            </a>
+        </div>
+    }
+</div>
+
+<style media="print">
+    .btn, .card-header button, nav, header, footer {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+    }
+
+    .progress {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+</style>

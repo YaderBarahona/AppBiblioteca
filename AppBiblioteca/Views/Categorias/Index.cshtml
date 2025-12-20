@@ -1,0 +1,66 @@
+﻿@model IEnumerable<AppBiblioteca.Models.Categoria>
+@{
+    ViewData["Title"] = "Lista de Categorías";
+}
+
+<div class="mb-5 pt-5">
+    <h2 class=" text-center text-dark">@ViewData["Title"]</h2>
+</div>
+
+<a asp-action="Create" class="btn btn-success mb-3 rounded-pill">
+    <i class="bi bi-plus-circle"></i> Agregar Nueva Categoría
+</a>
+
+<div class="mb-3 card-glow">
+    <div class="table-responsive">
+
+    <table class="table table-striped">
+    <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Categoría</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                        <td>@p.Id_Categoria</td>
+                        <td>@p.CategoriaNombre</td>
+                        <td>@p.Descripcion</td>
+                <td>
+                            <a asp-action="Edit" asp-route-id="@p.Id_Categoria"
+                       class="btn btn-sm btn-outline-dark rounded-pill" title="Editar">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          // error...
+          var err = '@Html.Raw(TempData["ErrorMessage"])';
+          if (err) {
+            Swal.fire({ icon:'error', title:'Lo sentimos', text: err, confirmButtonColor: '#000000' });
+          }
+
+          // éxito...
+          var ok = '@Html.Raw(TempData["SuccessMessage"])';
+          if (ok) {
+            Swal.fire({ icon:'success', title:'Proceso Completado', text: ok, confirmButtonColor: '#000000' });
+          }
+        });
+    </script>
+}

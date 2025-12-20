@@ -1,0 +1,188 @@
+﻿@model AppBiblioteca.Models.Material
+
+
+@{
+    ViewData["Title"] = "Agregar Nuevo Material";
+
+    // Si por alguna razón no vienen, los inicializamos para no romper
+    // var cats = ViewBag.Categorias as List<(int Id, string Nombre)> ?? new();
+    // var eds = ViewBag.Editoriales as List<(int Id, string Nombre)> ?? new();
+    // var auts = ViewBag.Autores as List<(int Id, string Nombre)> ?? new();
+}
+
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-5 pt-5">
+        <h2 class=" text-center text-dark">@ViewData["Title"]</h2>
+    </div>
+
+    <div class="mb-3 card-glow">
+
+
+
+        <div class="mb-3">
+            <label asp-for="Titulo" class="form-label"></label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ISBN" class="form-label"></label>
+            <input asp-for="ISBN" class="form-control" />
+            <span asp-validation-for="ISBN" class="text-danger"></span>
+        </div>
+
+        <!--
+        <div class="mb-3">
+            <label asp-for="FechaPublicacion" class="form-label"></label>
+            <input asp-for="FechaPublicacion" class="form-control" type="date" />
+            <span asp-validation-for="FechaPublicacion" class="text-danger"></span>
+        </div>
+        -->
+
+
+        <div class="mb-3">
+            <label asp-for="AnioPublicacion" class="form-label"></label>
+            <select asp-for="AnioPublicacion"
+                    class="form-select"
+                    asp-items="ViewBag.Years">
+                <option value="">-- Seleccione año --</option>
+            </select>
+            <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
+        </div>
+
+
+
+        <div class="mb-3">
+            <label asp-for="Idioma" class="form-label"></label>
+            <input asp-for="Idioma" class="form-control" />
+            <span asp-validation-for="Idioma" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Cantidad" class="form-label"></label>
+            <input asp-for="Cantidad" class="form-control" type="number" />
+            <span asp-validation-for="Cantidad" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Disponibles" class="form-label"></label>
+            <input asp-for="Disponibles" class="form-control" type="number" />
+            <span asp-validation-for="Disponibles" class="text-danger"></span>
+        </div>
+
+
+
+        <div class="mb-3">
+            <label asp-for="Estado" class="form-label"></label>
+            <select asp-for="Estado" class="form-select">
+                <option value="">-- Seleccione estado --</option>
+                <option value="Disponible">Disponible</option>
+                <option value="No Disponible">No Disponible</option>
+            </select>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+
+
+
+
+
+        <div class="mb-3">
+            <label asp-for="Id_Categoria" class="form-label"></label>
+            <select asp-for="Id_Categoria"
+                    asp-items="Model.CategoryList"
+                    class="form-select">
+                <option value="">-- Seleccione categoría --</option>
+            </select>
+            <span asp-validation-for="Id_Categoria" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Id_Editorial" class="form-label"></label>
+            <select asp-for="Id_Editorial"
+                    asp-items="Model.EditorialList"
+                    class="form-select">
+                <option value="">-- Seleccione editorial --</option>
+            </select>
+            <span asp-validation-for="Id_Editorial" class="text-danger"></span>
+        </div>
+
+
+
+
+
+        <div class="mb-3">
+            <label class="form-label">Autores</label>
+            <div class="checkbox-box">
+                @foreach (var author in Model.AutorList)
+                {
+                    <div class="form-check">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="SelectedAutorIds"
+                               value="@author.Value"
+                               id="autor_@author.Value"
+                               @(author.Selected ? "checked" : "") />
+                        <label class="form-check-label"
+                               for="autor_@author.Value">
+                            @author.Text
+                        </label>
+
+                    </div>
+                }
+            </div>
+            <span asp-validation-for="SelectedAutorIds" class="text-danger"></span>
+        </div>
+
+
+
+
+
+        <button type="submit" class="btn btn-dark rounded-pill">Guardar</button>
+        <a asp-action="Index" class="btn btn-secondary rounded-pill ms-2">Cancelar</a>
+
+    </div>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          // error...
+          var err = '@Html.Raw(TempData["ErrorMessage"])';
+          if (err) {
+            Swal.fire({ icon:'error', title:'¡Ups!', text: err });
+          }
+
+          // éxito...
+          var ok = '@Html.Raw(TempData["SuccessMessage"])';
+          if (ok) {
+            Swal.fire({ icon:'success', title:'¡Bien!', text: ok });
+          }
+        });
+
+    </script>
+
+
+
+
+    <script>
+        $(function(){
+          $('#SelectedAutorIds').multiselect({
+            buttonClass: 'form-select',        // para heredar estilos de Bootstrap
+            includeSelectAllOption: true,      // añade un “Seleccionar todo”
+            enableFiltering: true,             // busca dentro de la lista
+            nonSelectedText: '-- Elige autores --',
+            numberDisplayed: 2                 // cuántos mostrar antes de “+N”
+          });
+        });
+    </script>
+
+
+
+}

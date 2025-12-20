@@ -1,0 +1,154 @@
+﻿@model IEnumerable<AppBiblioteca.Models.Material>
+@{
+    ViewData["Title"] = "Libros registrados";
+}
+
+<div class="mb-5 pt-5">
+    <h2 class=" text-center text-dark">@ViewData["Title"]</h2>
+</div>
+
+<a asp-action="Create" class="btn btn-success mb-3 rounded-pill">
+    <i class="bi bi-plus-circle"></i> Agregar Nuevo Libro
+</a>
+
+<div class="mb-3 card-glow">
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>ISBN</th>
+                    <th>Categoría</th>
+                    <th>Año de Publicación</th>
+                    <th>Idioma</th>
+                    <th>Cantidad</th>
+                    <th>Disponibles</th>
+                    <th>Editorial</th>
+                    <th>Autores</th>
+                    <th>Estado</th>
+                    <th style="text-align:center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id_Material</td>
+                        <td>@item.Titulo</td>
+                        <td>@item.ISBN</td>
+                        <td>@item.CategoriaNombre</td>
+                        <td>@item.AnioPublicacion</td>
+                        <td>@item.Idioma</td>
+                        <td>@item.Cantidad</td>
+                        <td>@item.Disponibles</td>
+                        <td>@item.EditorialNombre</td>
+                        <td>@item.Autores</td>
+                        <td>@item.Estado</td>
+                        <td class="text-center">
+                            <div class="d-grid gap-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id_Material"
+                                   class="btn btn-sm btn-outline-dark rounded-pill"
+                                   title="Editar">
+                                    <i class="bi bi-pencil-fill"></i> Editar
+                                </a>
+                                <a asp-action="AgregarEjemplares" asp-route-id="@item.Id_Material"
+                                   class="btn btn-sm btn-outline-success rounded-pill"
+                                   title="Agregar Ejemplares">
+                                    <i class="bi bi-plus-circle"></i> Ejemplares
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger rounded-pill btn-baja"
+                                        data-material-id="@item.Id_Material"
+                                        data-material-titulo="@item.Titulo"
+                                        title="Dar de Baja">
+                                    <i class="bi bi-trash"></i> Dar de Baja
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<!-- Modal para Dar de Baja -->
+<div class="modal fade" id="modalBaja" tabindex="-1" aria-labelledby="modalBajaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalBajaLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Dar de Baja Material
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formBaja" asp-action="DarDeBaja" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="bajaId" name="id" />
+                <div class="modal-body">
+                    <p>¿Está seguro de dar de baja el material: <strong id="bajaTitulo"></strong>?</p>
+                    <div class="mb-3">
+                        <label for="observacion" class="form-label">Observación (requerida)</label>
+                        <textarea class="form-control"
+                                  id="observacion"
+                                  name="observacion"
+                                  rows="3"
+                                  required
+                                  placeholder="Motivo de la baja (deterioro, extravío, etc.)"></textarea>
+                    </div>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Nota:</strong> Esta acción registrará la baja del material. El material cambiará su estado.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger rounded-pill">
+                        <i class="bi bi-check-circle"></i> Confirmar Baja
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          // éxito...
+          var ok = '@Html.Raw(TempData["SuccessMessage"])';
+          if (ok) {
+            Swal.fire({ icon:'success', text: ok });
+          }
+
+          // error...
+          var err = '@Html.Raw(TempData["ErrorMessage"])';
+          if (err) {
+            Swal.fire({ icon:'error', title:'Error', text: err });
+          }
+
+          // Event listener para los botones de dar de baja
+          document.querySelectorAll('.btn-baja').forEach(function(button) {
+            button.addEventListener('click', function() {
+              var materialId = this.getAttribute('data-material-id');
+              var materialTitulo = this.getAttribute('data-material-titulo');
+
+              document.getElementById('bajaId').value = materialId;
+              document.getElementById('bajaTitulo').textContent = materialTitulo;
+              document.getElementById('observacion').value = '';
+
+              var modal = new bootstrap.Modal(document.getElementById('modalBaja'));
+              modal.show();
+            });
+          });
+        });
+    </script>
+}
