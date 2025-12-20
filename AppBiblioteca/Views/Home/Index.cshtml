@@ -1,8 +1,132 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-4 fw-bold text-dark">
+        <i class="bi bi-book-half text-success"></i> Bienvenido a la Biblioteca
+    </h1>
+    <p class="lead text-muted">CTP de Jicaral - Sistema de Gestión Bibliotecaria</p>
+    <hr class="my-4" style="border-color: #054f44; opacity: 0.3;">
 </div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                <div class="card-body text-center">
+                    <i class="bi bi-book-fill text-success fs-1 mb-3"></i>
+                    <h5 class="card-title text-dark">Materiales</h5>
+                    <p class="card-text text-muted small">Explora el catálogo de libros y materiales disponibles</p>
+                    <a asp-controller="Materiales" asp-action="Index" class="btn btn-sm btn-outline-success mt-2">Ver Materiales</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-check-fill text-primary fs-1 mb-3"></i>
+                    <h5 class="card-title text-dark">Préstamos</h5>
+                    <p class="card-text text-muted small">Gestiona los préstamos y devoluciones de materiales</p>
+                    <a asp-controller="Prestamos" asp-action="Index" class="btn btn-sm btn-outline-primary mt-2">Ir a Préstamos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                <div class="card-body text-center">
+                    <i class="bi bi-mortarboard-fill text-info fs-1 mb-3"></i>
+                    <h5 class="card-title text-dark">Recursos</h5>
+                    <p class="card-text text-muted small">Accede a recursos educativos y contenidos externos</p>
+                    <a asp-controller="Recursos" asp-action="Index" class="btn btn-sm btn-outline-info mt-2">Ver Recursos</a>
+                </div>
+            </div>
+        </div>
+
+        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+        {
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-bar-chart-fill text-warning fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Reportes</h5>
+                        <p class="card-text text-muted small">Consulta estadísticas y reportes del sistema</p>
+                        <a asp-controller="Reportes" asp-action="Dashboard" class="btn btn-sm btn-outline-warning mt-2">Ver Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100" style="background-color: rgba(5, 79, 68, 0.05);">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">
+                        <i class="bi bi-info-circle-fill text-success"></i> Acerca de
+                    </h5>
+                    <p class="card-text text-muted">
+                        Sistema de gestión bibliotecaria diseñado para facilitar el control de materiales,
+                        préstamos y recursos educativos del CTP de Jicaral. Optimiza la administración
+                        de la biblioteca y mejora la experiencia de estudiantes y personal.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100" style="background-color: rgba(5, 79, 68, 0.05);">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">
+                        <i class="bi bi-lightbulb-fill text-warning"></i> Accesos Rápidos
+                    </h5>
+                    <div class="d-flex flex-column gap-2">
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+                        {
+                            <a asp-controller="Consultas" asp-action="BuscarMateriales" class="text-decoration-none text-muted">
+                                <i class="bi bi-search"></i> Buscar Materiales
+                            </a>
+                            <a asp-controller="Consultas" asp-action="BuscarUsuarios" class="text-decoration-none text-muted">
+                                <i class="bi bi-people"></i> Buscar Usuarios
+                            </a>
+                            <a asp-controller="Consultas" asp-action="HistorialPrestamos" class="text-decoration-none text-muted">
+                                <i class="bi bi-clock-history"></i> Historial de Préstamos
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Prestamos" asp-action="MisPrestamos" class="text-decoration-none text-muted">
+                                <i class="bi bi-book"></i> Mis Préstamos
+                            </a>
+                            <a asp-controller="Recursos" asp-action="Buscar" class="text-decoration-none text-muted">
+                                <i class="bi bi-search"></i> Buscar Recursos
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg" style="background-color: rgba(5, 79, 68, 0.1);">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-door-open-fill text-success fs-1 mb-3"></i>
+                    <h3 class="card-title text-dark mb-3">Acceso al Sistema</h3>
+                    <p class="card-text text-muted mb-4">
+                        Inicia sesión para acceder al sistema de gestión bibliotecaria
+                    </p>
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-success btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
