@@ -479,8 +479,11 @@ namespace AppBiblioteca.Controllers
                     worksheet.Cells[row, 2].Value = prestamos.Count;
                     worksheet.Cells[row, 1, row, 2].Style.Font.Bold = true;
 
-                    // Ajustar columnas
-                    worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+                    // Ajustar columnas (verificar que hay datos)
+                    if (worksheet.Dimension != null)
+                    {
+                        worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+                    }
 
                     // Generar archivo
                     var fileName = $"Prestamos_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
@@ -490,7 +493,14 @@ namespace AppBiblioteca.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Error al exportar a Excel: " + ex.Message;
+                // Log del error para debugging
+                var errorDetalle = $"Error al exportar a Excel: {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorDetalle += $" | Inner: {ex.InnerException.Message}";
+                }
+
+                TempData["ErrorMessage"] = errorDetalle;
                 return RedirectToAction("Prestamos");
             }
         }
