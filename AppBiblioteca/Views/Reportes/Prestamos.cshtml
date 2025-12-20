@@ -91,12 +91,12 @@
                         Detalle de Préstamos
                     </h5>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-success" onclick="exportToExcel()">
+                        <a href="javascript:void(0);" onclick="exportToExcel()" class="btn btn-sm btn-outline-success">
                             <i class="bi bi-file-earmark-excel"></i> Excel
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="exportToPDF()">
+                        </a>
+                        <a href="javascript:void(0);" onclick="exportToPDF()" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-file-earmark-pdf"></i> PDF
-                        </button>
+                        </a>
                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
                             <i class="bi bi-printer"></i> Imprimir
                         </button>
@@ -217,21 +217,45 @@
 @section Scripts {
 <script>
     function exportToExcel() {
-        Swal.fire({
-            icon: 'info',
-            title: 'Exportar a Excel',
-            text: 'Funcionalidad de exportación en desarrollo',
-            confirmButtonText: 'Entendido'
-        });
+        var fechaInicio = document.querySelector('input[name="FechaInicio"]').value;
+        var fechaFin = document.querySelector('input[name="FechaFin"]').value;
+
+        var url = '@Url.Action("ExportarPrestamosExcel", "Reportes")';
+        var params = [];
+
+        if (fechaInicio) {
+            params.push('fechaInicio=' + encodeURIComponent(fechaInicio));
+        }
+        if (fechaFin) {
+            params.push('fechaFin=' + encodeURIComponent(fechaFin));
+        }
+
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+
+        window.location.href = url;
     }
 
     function exportToPDF() {
-        Swal.fire({
-            icon: 'info',
-            title: 'Exportar a PDF',
-            text: 'Funcionalidad de exportación en desarrollo',
-            confirmButtonText: 'Entendido'
-        });
+        var fechaInicio = document.querySelector('input[name="FechaInicio"]').value;
+        var fechaFin = document.querySelector('input[name="FechaFin"]').value;
+
+        var url = '@Url.Action("ExportarPrestamosPDF", "Reportes")';
+        var params = [];
+
+        if (fechaInicio) {
+            params.push('fechaInicio=' + encodeURIComponent(fechaInicio));
+        }
+        if (fechaFin) {
+            params.push('fechaFin=' + encodeURIComponent(fechaFin));
+        }
+
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+
+        window.location.href = url;
     }
 </script>
 }
