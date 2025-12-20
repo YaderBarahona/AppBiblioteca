@@ -415,8 +415,8 @@ namespace AppBiblioteca.Controllers
                     worksheet.Cells["A1"].Style.Font.Bold = true;
                     worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells["A1"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    worksheet.Cells["A1"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(13, 110, 253));
-                    worksheet.Cells["A1"].Style.Font.Color.SetColor(Color.White);
+                    worksheet.Cells["A1"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(13, 110, 253));
+                    worksheet.Cells["A1"].Style.Font.Color.SetColor(System.Drawing.Color.White);
 
                     // Información del período
                     worksheet.Cells["A2"].Value = "Período:";
@@ -441,7 +441,7 @@ namespace AppBiblioteca.Controllers
                     {
                         range.Style.Font.Bold = true;
                         range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(211, 211, 211));
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(211, 211, 211));
                         range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                         range.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                     }
@@ -466,7 +466,7 @@ namespace AppBiblioteca.Controllers
                             using (var range = worksheet.Cells[row, 1, row, 9])
                             {
                                 range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(255, 230, 230));
+                                range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(255, 230, 230));
                             }
                         }
 
