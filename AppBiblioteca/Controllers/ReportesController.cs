@@ -13,7 +13,6 @@ using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace AppBiblioteca.Controllers
 {
@@ -503,7 +502,7 @@ namespace AppBiblioteca.Controllers
             try
             {
                 // Configurar licencia de QuestPDF (modo comunitario)
-                QuestPDF.Settings.License = LicenseType.Community;
+                QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
                 var prestamos = ObtenerPrestamosPorPeriodo(fechaInicio, fechaFin);
 
