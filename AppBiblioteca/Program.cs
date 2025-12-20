@@ -5,7 +5,7 @@ using OfficeOpenXml;
 using QuestPDF.Infrastructure;
 
 // Configurar licencias de librerías de exportación
-// EPPlus 5.x usa LicenseContext
+// EPPlus 7.5.1 usa LicenseContext (v8+ cambió la API)
 OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 QuestPDF.Settings.License = LicenseType.Community;
 
