@@ -12,42 +12,42 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <div class="row g-4 mb-4">
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
-                <div class="card-body text-center">
-                    <i class="bi bi-book-fill text-success fs-1 mb-3"></i>
-                    <h5 class="card-title text-dark">Materiales</h5>
-                    <p class="card-text text-muted small">Explora el catálogo de libros y materiales disponibles</p>
-                    <a asp-controller="Materiales" asp-action="Index" class="btn btn-sm btn-outline-success mt-2">Ver Materiales</a>
+    @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
+    {
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-book-fill text-success fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Materiales</h5>
+                        <p class="card-text text-muted small">Explora el catálogo de libros y materiales disponibles</p>
+                        <a asp-controller="Materiales" asp-action="Index" class="btn btn-sm btn-outline-success mt-2">Ver Materiales</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
-                <div class="card-body text-center">
-                    <i class="bi bi-calendar-check-fill text-primary fs-1 mb-3"></i>
-                    <h5 class="card-title text-dark">Préstamos</h5>
-                    <p class="card-text text-muted small">Gestiona los préstamos y devoluciones de materiales</p>
-                    <a asp-controller="Prestamos" asp-action="Index" class="btn btn-sm btn-outline-primary mt-2">Ir a Préstamos</a>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check-fill text-primary fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Préstamos</h5>
+                        <p class="card-text text-muted small">Gestiona los préstamos y devoluciones de materiales</p>
+                        <a asp-controller="Prestamos" asp-action="Index" class="btn btn-sm btn-outline-primary mt-2">Ir a Préstamos</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
-                <div class="card-body text-center">
-                    <i class="bi bi-mortarboard-fill text-info fs-1 mb-3"></i>
-                    <h5 class="card-title text-dark">Recursos</h5>
-                    <p class="card-text text-muted small">Accede a recursos educativos y contenidos externos</p>
-                    <a asp-controller="Recursos" asp-action="Index" class="btn btn-sm btn-outline-info mt-2">Ver Recursos</a>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-mortarboard-fill text-info fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Recursos</h5>
+                        <p class="card-text text-muted small">Accede a recursos educativos y contenidos externos</p>
+                        <a asp-controller="Recursos" asp-action="Index" class="btn btn-sm btn-outline-info mt-2">Ver Recursos</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        @if (User.IsInRole("Administrador") || User.IsInRole("Bibliotecario"))
-        {
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
                     <div class="card-body text-center">
@@ -58,8 +58,45 @@
                     </div>
                 </div>
             </div>
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-4 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-book-heart-fill text-primary fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Mis Préstamos</h5>
+                        <p class="card-text text-muted small">Consulta tus préstamos activos y el historial</p>
+                        <a asp-controller="Prestamos" asp-action="MisPrestamos" class="btn btn-sm btn-outline-primary mt-2">Ver Mis Préstamos</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-mortarboard-fill text-info fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Recursos Educativos</h5>
+                        <p class="card-text text-muted small">Accede a recursos educativos y contenidos externos</p>
+                        <a asp-controller="Recursos" asp-action="Index" class="btn btn-sm btn-outline-info mt-2">Ver Recursos</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: rgba(5, 79, 68, 0.1);">
+                    <div class="card-body text-center">
+                        <i class="bi bi-search text-success fs-1 mb-3"></i>
+                        <h5 class="card-title text-dark">Buscar Recursos</h5>
+                        <p class="card-text text-muted small">Busca en el catálogo de recursos disponibles</p>
+                        <a asp-controller="Recursos" asp-action="Buscar" class="btn btn-sm btn-outline-success mt-2">Buscar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="row g-4">
         <div class="col-md-6">
