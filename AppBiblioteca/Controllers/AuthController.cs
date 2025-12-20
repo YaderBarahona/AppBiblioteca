@@ -75,7 +75,7 @@ namespace AppBiblioteca.Controllers
                 new ClaimsPrincipal(identity)
             ).Wait();
 
-            return RedirectToAction("Index", "Libros");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
