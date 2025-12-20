@@ -399,9 +399,6 @@ namespace AppBiblioteca.Controllers
         {
             try
             {
-                // Configurar licencia de EPPlus (modo no comercial)
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
                 var prestamos = ObtenerPrestamosPorPeriodo(fechaInicio, fechaFin);
 
                 using (var package = new ExcelPackage())
@@ -511,9 +508,6 @@ namespace AppBiblioteca.Controllers
         {
             try
             {
-                // Configurar licencia de QuestPDF (modo comunitario)
-                QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-
                 var prestamos = ObtenerPrestamosPorPeriodo(fechaInicio, fechaFin);
 
                 var document = Document.Create(container =>

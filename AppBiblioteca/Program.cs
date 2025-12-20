@@ -1,6 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using AppBiblioteca.Models;
 using AppBiblioteca.Services;
+using OfficeOpenXml;
+using QuestPDF.Infrastructure;
+
+// Configurar licencias de librerías de exportación
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
