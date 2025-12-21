@@ -7,9 +7,24 @@
     <h2 class=" text-center text-dark">@ViewData["Title"]</h2>
 </div>
 
-<a asp-action="Create" class="btn btn-success mb-3 rounded-pill">
-    <i class="bi bi-plus-circle"></i> Agregar Nuevo Libro
-</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-success rounded-pill">
+        <i class="bi bi-plus-circle"></i> Agregar Nuevo Libro
+    </a>
+
+    <div class="d-flex align-items-center gap-2">
+        <label for="estadoFiltro" class="mb-0 text-dark fw-bold">
+            <i class="bi bi-funnel-fill"></i> Filtrar por Estado:
+        </label>
+        <select id="estadoFiltro" class="form-select form-select-sm" style="width: auto;" onchange="filtrarPorEstado(this.value)">
+            <option value="Todos" @(ViewBag.EstadoFiltro == "Todos" ? "selected" : "")>Todos</option>
+            <option value="Disponible" @(ViewBag.EstadoFiltro == "Disponible" ? "selected" : "")>Disponible</option>
+            <option value="Dado de baja" @(ViewBag.EstadoFiltro == "Dado de baja" ? "selected" : "")>Dado de baja</option>
+            <option value="Reservado" @(ViewBag.EstadoFiltro == "Reservado" ? "selected" : "")>Reservado</option>
+            <option value="Prestado" @(ViewBag.EstadoFiltro == "Prestado" ? "selected" : "")>Prestado</option>
+        </select>
+    </div>
+</div>
 
 <div class="mb-3 card-glow">
     <div class="table-responsive">
@@ -122,6 +137,11 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Función para filtrar por estado
+        function filtrarPorEstado(estado) {
+            window.location.href = '@Url.Action("Index", "Materiales")?estadoFiltro=' + encodeURIComponent(estado);
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
           // éxito...
           var ok = '@Html.Raw(TempData["SuccessMessage"])';

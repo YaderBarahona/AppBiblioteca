@@ -24,7 +24,7 @@ namespace AppBiblioteca.Controllers
 
         // GET: Materiales/Index
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string estadoFiltro = "Todos")
         {
             var materiales = new List<Material>();
 
@@ -55,6 +55,15 @@ namespace AppBiblioteca.Controllers
                     }
                 }
             }
+
+            // Filtrar por estado si no es "Todos"
+            if (estadoFiltro != "Todos")
+            {
+                materiales = materiales.Where(m => m.Estado == estadoFiltro).ToList();
+            }
+
+            // Pasar el filtro actual al ViewBag
+            ViewBag.EstadoFiltro = estadoFiltro;
 
             return View(materiales);
         }
