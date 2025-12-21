@@ -564,11 +564,17 @@ namespace AppBiblioteca.Controllers
         // POST: Materiales/DarDeBaja
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DarDeBaja(int id, string observacion)
+        public IActionResult DarDeBaja(int id, int cantidad, string observacion)
         {
             if (string.IsNullOrWhiteSpace(observacion))
             {
                 TempData["ErrorMessage"] = "Debe proporcionar una observación para dar de baja el material.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (cantidad <= 0)
+            {
+                TempData["ErrorMessage"] = "La cantidad a dar de baja debe ser mayor a 0.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -587,6 +593,7 @@ namespace AppBiblioteca.Controllers
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Id_Material", id);
+                    cmd.Parameters.AddWithValue("@Cantidad", cantidad);
                     cmd.Parameters.AddWithValue("@Id_Usuario", userId);
                     cmd.Parameters.AddWithValue("@Observacion", observacion);
 
@@ -594,7 +601,7 @@ namespace AppBiblioteca.Controllers
                     cmd.ExecuteNonQuery();
                 }
 
-                TempData["SuccessMessage"] = "Material dado de baja correctamente.";
+                TempData["SuccessMessage"] = $"Se dieron de baja {cantidad} ejemplar(es) correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (SqlException ex)
@@ -606,6 +613,48 @@ namespace AppBiblioteca.Controllers
             {
                 TempData["ErrorMessage"] = "Error al dar de baja el material: " + ex.Message;
                 return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // GET: Materiales/HistorialBajas
+        [HttpGet]
+        public IActionResult HistorialBajas()
+        {
+            var bajas = new List<BajaMaterial>();
+
+            try
+            {
+                using (var conn = new SqlConnection(_cs))
+                using (var cmd = new SqlCommand("usp_GetHistorialBajas", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            bajas.Add(new BajaMaterial
+                            {
+                                Id_Baja = reader.GetInt32(reader.GetOrdinal("TN_Id_Baja")),
+                                Id_Material = reader.GetInt32(reader.GetOrdinal("TN_Id_Material")),
+                                TituloMaterial = reader.GetString(reader.GetOrdinal("TC_Titulo")),
+                                ISBN = reader.GetString(reader.GetOrdinal("TC_ISBN")),
+                                Cantidad = reader.GetInt32(reader.GetOrdinal("TN_Cantidad")),
+                                Observacion = reader.GetString(reader.GetOrdinal("TC_Observacion")),
+                                FechaBaja = reader.GetDateTime(reader.GetOrdinal("TF_Fecha_Baja")),
+                                NombreUsuario = reader.GetString(reader.GetOrdinal("TC_UserName"))
+                            });
+                        }
+                    }
+                }
+
+                return View(bajas);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error al cargar el historial de bajas: " + ex.Message;
+                return View(new List<BajaMaterial>());
             }
         }
 

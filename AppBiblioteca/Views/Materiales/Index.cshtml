@@ -79,7 +79,8 @@
                                         class="btn btn-sm btn-outline-danger rounded-pill btn-baja"
                                         data-material-id="@item.Id_Material"
                                         data-material-titulo="@item.Titulo"
-                                        title="Dar de Baja">
+                                        data-material-disponibles="@item.Disponibles"
+                                        title="Dar de Baja Ejemplares">
                                     <i class="bi bi-trash"></i> Dar de Baja
                                 </button>
                             </div>
@@ -99,27 +100,43 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="modalBajaLabel">
-                    <i class="bi bi-exclamation-triangle"></i> Dar de Baja Material
+                    <i class="bi bi-exclamation-triangle"></i> Dar de Baja Ejemplares
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formBaja" asp-action="DarDeBaja" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" id="bajaId" name="id" />
+                <input type="hidden" id="bajaCantidadDisponible" />
                 <div class="modal-body">
-                    <p>¿Está seguro de dar de baja el material: <strong id="bajaTitulo"></strong>?</p>
+                    <p>Material: <strong id="bajaTitulo"></strong></p>
+                    <p class="text-muted small">Cantidad total disponible: <strong id="bajaDisponibleText"></strong></p>
+
                     <div class="mb-3">
-                        <label for="observacion" class="form-label">Observación (requerida)</label>
+                        <label for="cantidadBaja" class="form-label">Cantidad de ejemplares a dar de baja <span class="text-danger">*</span></label>
+                        <input type="number"
+                               class="form-control"
+                               id="cantidadBaja"
+                               name="cantidad"
+                               min="1"
+                               required
+                               placeholder="Ej: 1" />
+                        <div class="form-text">Ingrese cuántos ejemplares desea dar de baja</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="observacion" class="form-label">Motivo de la baja <span class="text-danger">*</span></label>
                         <textarea class="form-control"
                                   id="observacion"
                                   name="observacion"
                                   rows="3"
                                   required
-                                  placeholder="Motivo de la baja (deterioro, extravío, etc.)"></textarea>
+                                  placeholder="Motivo de la baja (deterioro, extravío, obsoleto, etc.)"></textarea>
                     </div>
+
                     <div class="alert alert-warning" role="alert">
                         <i class="bi bi-info-circle"></i>
-                        <strong>Nota:</strong> Esta acción registrará la baja del material. El material cambiará su estado.
+                        <strong>Nota:</strong> Esta acción decrementará la cantidad disponible del material y se registrará en el historial de bajas.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -162,9 +179,14 @@
             button.addEventListener('click', function() {
               var materialId = this.getAttribute('data-material-id');
               var materialTitulo = this.getAttribute('data-material-titulo');
+              var cantidadDisponible = parseInt(this.getAttribute('data-material-disponibles'));
 
               document.getElementById('bajaId').value = materialId;
               document.getElementById('bajaTitulo').textContent = materialTitulo;
+              document.getElementById('bajaDisponibleText').textContent = cantidadDisponible;
+              document.getElementById('bajaCantidadDisponible').value = cantidadDisponible;
+              document.getElementById('cantidadBaja').value = '';
+              document.getElementById('cantidadBaja').max = cantidadDisponible;
               document.getElementById('observacion').value = '';
 
               var modal = new bootstrap.Modal(document.getElementById('modalBaja'));
