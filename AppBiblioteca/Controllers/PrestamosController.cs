@@ -37,9 +37,9 @@ namespace AppBiblioteca.Controllers
                 int? idUsuario = null;
                 int? idEstado = null;
 
-                if (User.IsInRole("Estudiante"))
+                if (User.IsInRole("Estudiante") || User.IsInRole("Funcionario"))
                 {
-                    // Estudiantes solo ven sus propios préstamos
+                    // Estudiantes y Funcionarios solo ven sus propios préstamos
                     idUsuario = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
 
@@ -47,7 +47,7 @@ namespace AppBiblioteca.Controllers
 
                 // Pasar información de rol al ViewBag
                 ViewBag.EsBibliotecario = User.IsInRole("Bibliotecario") || User.IsInRole("Administrador");
-                ViewBag.EsEstudiante = User.IsInRole("Estudiante");
+                ViewBag.EsEstudiante = User.IsInRole("Estudiante") || User.IsInRole("Funcionario");
 
                 return View(prestamos);
             }
@@ -60,7 +60,7 @@ namespace AppBiblioteca.Controllers
 
         // GET: Prestamos/CrearReserva
         [HttpGet]
-        [Authorize(Roles = "Estudiante")]
+        [Authorize(Roles = "Estudiante,Funcionario")]
         public IActionResult CrearReserva()
         {
             var model = new CrearReservaViewModel();
@@ -108,7 +108,7 @@ namespace AppBiblioteca.Controllers
         // POST: Prestamos/CrearReserva
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Estudiante")]
+        [Authorize(Roles = "Estudiante,Funcionario")]
         public async System.Threading.Tasks.Task<IActionResult> CrearReserva(CrearReservaViewModel model)
         {
             if (!ModelState.IsValid || !model.MaterialesSeleccionados.Any())
@@ -202,7 +202,7 @@ namespace AppBiblioteca.Controllers
 
         // GET: Prestamos/MisPrestamos
         [HttpGet]
-        [Authorize(Roles = "Estudiante")]
+        [Authorize(Roles = "Estudiante,Funcionario")]
         public IActionResult MisPrestamos()
         {
             var prestamos = new List<Prestamo>();
@@ -392,7 +392,7 @@ namespace AppBiblioteca.Controllers
                 // Enviar notificación al usuario
                 if (prestamo != null && !string.IsNullOrEmpty(prestamo.EmailUsuario))
                 {
-                    var motivo = User.IsInRole("Estudiante")
+                    var motivo = User.IsInRole("Estudiante") || User.IsInRole("Funcionario")
                         ? "Cancelación solicitada por el usuario"
                         : "Cancelación realizada por el bibliotecario";
 
@@ -415,7 +415,7 @@ namespace AppBiblioteca.Controllers
                 TempData["ErrorMessage"] = "Error al cancelar la reserva: " + ex.Message;
             }
 
-            if (User.IsInRole("Estudiante"))
+            if (User.IsInRole("Estudiante") || User.IsInRole("Funcionario"))
                 return RedirectToAction(nameof(MisPrestamos));
             else
                 return RedirectToAction(nameof(Index));
@@ -436,8 +436,8 @@ namespace AppBiblioteca.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Verificar que el usuario solo puede ver sus propios préstamos (si es estudiante)
-                if (User.IsInRole("Estudiante"))
+                // Verificar que el usuario solo puede ver sus propios préstamos (si es estudiante o funcionario)
+                if (User.IsInRole("Estudiante") || User.IsInRole("Funcionario"))
                 {
                     var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                     if (prestamo.TN_Id_Usuario != userId)
